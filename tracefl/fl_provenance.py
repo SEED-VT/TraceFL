@@ -358,7 +358,7 @@ def _run_and_save_prov_result_in_cache(cfg):
     #     f"Provenance results saved for {cfg.exp_key}, avg provenance time per round: {avg_prov_time_per_round} seconds")
     # logging.info(
     #     f"Average Localization Accuracy: {avg_prov_accuracy}")
-    logging.info(f"Provenance results saved")
+    # logging.info(f"Provenance results saved")
 
 
 

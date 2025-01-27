@@ -1061,13 +1061,8 @@ def plot_tracefl_configuration_results(cfg):
     total_rounds = sum([x['Total Rounds'] for x in all_config_summary])
     total_accuracy = sum([x['Total Accuracy'] for x in all_config_summary])
     average_accuracy = total_accuracy / total_rounds
-    fig.subplots_adjust(hspace=0.0, wspace=0.0)
     plt.tight_layout()
-    fname = f""
-    plt.savefig(f"provenance_report/experiment.png", bbox_inches='tight', format="png", dpi=600)
-
-    plt.close('all')
-    _save_plot(fig, fname)
-    logging.info(f"-------------- {fname} --------------")
+    plt.savefig(f"graphs/prov_result.png", bbox_inches='tight', format="png", dpi=600)
+    logging.info(f"----------------------------")
     logging.info(f"Total Rounds: {total_rounds}")
-    logging.info(f"Average Accuracy: {average_accuracy}")
+    logging.info(f"TraceFL Average Localization Accuracy: {average_accuracy}")
