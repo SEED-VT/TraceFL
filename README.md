@@ -80,7 +80,9 @@ We provide **two** approaches to setting up the environment:
 
 ## 4.1 Quick Colab Setup 
 
-To quickly validate the artifact, click the "Open in Colab" badge above. This will open a Google Colab notebook with all dependencies pre-installed. You can run the provided demo script to verify the installation and generate a sample provenance report.
+To quickly validate and and produce the artifact, click: [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SEED-VT/TraceFL/blob/main/artifact.ipynb). 
+
+This will open a Google Colab notebook with all dependencies pre-installed. You can run the provided demo script to verify the installation and generate a sample provenance report.
 
 
 ### 4.2 Local/Conda Setup
@@ -100,9 +102,15 @@ To quickly validate the artifact, click the "Open in Colab" badge above. This wi
    cd TraceFL
    poetry install
    ```
-   **Expected Output:**  
-   `✅ TraceFL installed successfully! Ready for federated interpretability!`
-
+   **Expected Output ✅:**  
+   ```bash
+        ...
+        - Installing ruff (0.0.272)
+        - Installing transformers (4.48.1)
+        - Installing types-requests (2.27.7)
+    
+    Installing the current project: tracefl (1.0.0)
+    ```
 
 <!-- ### 4.3 Quick Docker Setup (Recommended)
 

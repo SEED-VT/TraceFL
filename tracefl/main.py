@@ -21,7 +21,7 @@ from tracefl.dataset import get_clients_server_data, mdedical_dataset2labels, co
 
 from tracefl.models import global_model_eval, initialize_model
 from tracefl.strategy import FedAvgSave
-from tracefl.utils import set_exp_key
+from tracefl.utils import set_exp_key, get_backend_config
 from tracefl.fl_provenance import given_key_provenance
 from tracefl.plotting import do_plotting, convert_cache_to_csv, plot_label_distribution, plot_tracefl_configuration_results, feddebug_comparison_table
 
@@ -35,20 +35,7 @@ class FLSimulation:
         self.cfg = cfg
         self.strategy = None
         self.device = torch.device(self.cfg.device)
-
-        self.client_resources = {"num_cpus": cfg.client_cpus}
-        if self.cfg.device == "cuda":
-            self.client_resources = {
-                "num_gpus": cfg.client_gpu,
-                "num_cpus": cfg.client_cpus,
-            }
-
-        init_args = {"num_cpus": self.cfg.total_cpus,
-                     "num_gpus": self.cfg.total_gpus}
-        self.backend_config = {
-            "client_resources": self.client_resources,
-            "init_args": init_args,
-        }
+        self.backend_config = get_backend_config(cfg)
 
     def set_server_data(self, ds):
         """Set the server data."""
@@ -197,7 +184,6 @@ def run_training_simulation(cfg):
 
     logging.info(
         f" ***********  Starting Experiment: {cfg.exp_key} ***************")
-    # logging.info(f"Simulation Configuration: {cfg}")
 
     ds_dict = get_clients_server_data(cfg)
 
@@ -272,7 +258,6 @@ def main(cfg) -> None:
             feddebug_comparison_table(cfg)
         else:
             plot_tracefl_configuration_results(cfg)
-
 
     # if cfg.convert_cache_to_csv:
     #     prov_cache =  Index(cfg.storage.dir + cfg.storage.results_cache_name)

@@ -3,20 +3,22 @@ defaults:
     - _self_
 
 exp_key: "Temp-" # This is the test key. It will be changed after running the exp
-num_clients: 10 
-clients_per_round: 10
-num_rounds: 10
+num_clients: 20
+clients_per_round: 2
+num_rounds: 2
 dirichlet_alpha: None # non-iid
 batch_size: 32 # client batch size
 # for differential privacy
 noise_multiplier: -1
 clipping_norm: -1
 
+# Device and Resource Configuration
+device: cpu # cpu or cuda
 total_gpus: 1
 total_cpus: 2
-client_cpus: 2
-client_gpu: 1
-device: "cpu" # "cpu" or "cuda"
+client_resources:
+    num_cpus: 2
+    num_gpus: 0.2 # Note that `num_gpus` is only used when the device is set to `cuda` (i.e., `device = cuda`)
 
 client:
     epochs: 2
@@ -27,7 +29,7 @@ model:
     arch: ${model_arch.${model.name}}
 
 dataset:
-    name: 'pathmnist' # organamnist
+    name: "pathmnist" # organamnist
     num_classes: ${dataset_classes.${dataset.name}}
     channels: ${dataset_channels.${dataset.name}}
 
@@ -50,19 +52,15 @@ data_dist:
     max_server_data_size: 2048
 
 
-
-
+# flags for the experiment
 do_full_cache_provenance: false
 dry_run: false
-
 do_training: true
 do_provenance: true
 convert_cache_to_csv: true
 enable_beta: true
 plotting: true
 
-
-    
 hydra:
     job_logging:
         root:

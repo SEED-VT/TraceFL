@@ -10,6 +10,24 @@ from sklearn import metrics
 import numpy as np
 
 
+def get_backend_config(cfg): 
+
+    client_resources = {"num_cpus": cfg.client_cpus.num_cpus}
+    if cfg.device == "cuda":
+        client_resources = {
+            "num_gpus": cfg.client_resources.num_gpus,
+            "num_cpus": cfg.client_cpus.num_cpus,
+        }
+
+    backend_config = {
+        "client_resources": client_resources,
+        "init_args": {"num_cpus": cfg.total_cpus,
+                "num_gpus": cfg.total_gpus},
+    }
+    return backend_config
+
+
+
 def compute_importance(n_elements, decay_factor=0.9):
     # Generate indices for the elements
     indices = np.arange(n_elements)
