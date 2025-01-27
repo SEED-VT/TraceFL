@@ -1,72 +1,134 @@
 defaults:
-    - constants
-    - _self_
+    - constants # Includes all values from the file "constants.yaml"
+    - _self_ # Ensures this file’s own contents are loaded last so they can override if necessary
 
-exp_key: "Temp-" # This is the test key. It will be changed after running the exp
-num_clients: 20
-clients_per_round: 2
-num_rounds: 2
-dirichlet_alpha: None # non-iid
-batch_size: 32 # client batch size
-# for differential privacy
-noise_multiplier: -1
-clipping_norm: -1
+exp_key: "Temp-" # Experiment key or name. Useful for uniquely identifying experiment runs. # This is a placeholder and typically overwritten when the final experiment runs.
 
+num_clients: 20 # Total number of federated clients.
+clients_per_round: 4 # Number of clients selected per federated round.
+num_rounds: 3 # Number of total federated rounds.
+
+dirichlet_alpha: 0.3 # Alpha parameter for the Dirichlet distribution # controlling non-IID data splits among clients.
+
+batch_size: 32 # Mini-batch size used by each client during training.
+
+# Differential Privacy Settings
+noise_multiplier: -1 # If > 0, indicates the noise multiplier for DP;  # -1 or 0 typically indicates DP is disabled.
+clipping_norm: -1 # If > 0, maximum gradient norm (clipping) for DP; # -1 indicates no clipping.
+
+################################################################################
 # Device and Resource Configuration
-device: cpu # cpu or cuda
-total_gpus: 1
-total_cpus: 2
+################################################################################
+device: cpu # Execution device: "cpu" or "cuda".
+total_gpus: 1 # Total number of GPUs available (especially relevant if device="cuda").
+total_cpus: 2 # Total number of CPU cores available.
+
 client_resources:
-    num_cpus: 2
-    num_gpus: 0.2 # Note that `num_gpus` is only used when the device is set to `cuda` (i.e., `device = cuda`)
+    cpus: 1 # CPU resources allocated per client (for scheduling or parallelization).
+    gpus: 1 # Fraction of GPU allocated per client. Only effective if device="cuda".
 
+################################################################################
+# Client Configuration
+################################################################################
 client:
-    epochs: 2
-    lr: 0.001
+    epochs: 2 # Number of local epochs each client performs per round.
+    lr: 0.001 # Learning rate used by each client.
 
+################################################################################
+# Model Configuration
+################################################################################
 model:
-    name: densenet121 #google-bert/bert-base-cased  #microsoft/MiniLM-L12-H384-uncased #Intel/dynamic_tinybert #google-bert/bert-base-cased #resnet18
-    arch: ${model_arch.${model.name}}
+    name: "resnet18" # Name of the model to be used.
+    arch: ${model_arch.${model.name}} # Uses interpolation from "constants.yaml" (e.g., "cnn" or "transformer").
 
+################################################################################
+# Dataset Configuration
+################################################################################
 dataset:
-    name: "pathmnist" # organamnist
-    num_classes: ${dataset_classes.${dataset.name}}
-    channels: ${dataset_channels.${dataset.name}}
+    name: "mnist" # Name of the dataset (e.g., "mnist", "cifar10", "organamnist", etc.).
+    num_classes: ${dataset_classes.${dataset.name}} # Dynamically fetched from constants.yaml.
+    channels: ${dataset_channels.${dataset.name}} # Dynamically fetched from constants.yaml.
 
+################################################################################
+# Federated Strategy Configuration
+################################################################################
 strategy:
-    name: fedavg # points to your strategy (either custom or exiting in Flower)
-    num_rounds: ${num_rounds}
+    name: fedavg # Name of the FL strategy (e.g., "fedavg", "fedprox", etc.).
+    num_rounds: ${num_rounds} # Referencing the top-level num_rounds.
     clients_per_round: ${clients_per_round}
     noise_multiplier: ${noise_multiplier}
     clipping_norm: ${clipping_norm}
 
+################################################################################
+# Data Distribution Configuration
+################################################################################
 data_dist:
-    dist_type: non_iid_dirichlet #PathologicalPartitioner-3 # non_iid_dirichlet
+    dist_type: non_iid_dirichlet # Defines how data is split among clients ("non_iid_dirichlet", "PathologicalPartitioner-#").
     num_clients: ${num_clients}
     batch_size: ${batch_size}
     dirichlet_alpha: ${dirichlet_alpha}
-    dname: ${dataset.name}
-    mname: ${model.name}
-    storage_dir: ${storage.dir}
-    max_per_client_data_size: 2048
-    max_server_data_size: 2048
+    dname: ${dataset.name} # Dataset name, used for naming or caching.
+    mname: ${model.name} # Model name, used for naming or caching.
+    storage_dir: ${storage.dir} # Base storage directory from constants.yaml.
+    max_per_client_data_size: 2048 # Optional limit on how much data each client receives.
+    max_server_data_size: 2048 # Optional limit on how much data is stored on the server.
+
+################################################################################
+# Experiment Flags
+################################################################################
+do_full_cache_provenance: false # If True, enables full caching of provenance data.
+dry_run: false # If True, does not execute the full experiment (useful for debugging).
+do_training: true # If True, trains the model in a federated manner.
+do_provenance: true # If True, runs provenance tracking or auditing.
+convert_cache_to_csv: true # If True, converts cache results to CSV format for analysis.
+enable_beta: true # Enables beta features or modules if they exist in your code.
+plotting: true # If True, generates plots or visualizations at the end of the experiment.
+
+# ################################################################################
+# # Hydra Logging Configuration
+# ################################################################################
+# hydra:
+#     job_logging:
+#         root:
+#             level: INFO # Top-level logging level.
+#         loggers:
+#             flwr:
+#                 level: INFO # Logging level for Flower FL library.
+#             accelerate.utils.other:
+#                 level: ERROR # Logging level for the Accelerate library (e.g., to suppress unnecessary logs).
 
 
-# flags for the experiment
-do_full_cache_provenance: false
-dry_run: false
-do_training: true
-do_provenance: true
-convert_cache_to_csv: true
-enable_beta: true
-plotting: true
-
+# conf.yaml (example)
+################################################################################
+# Hydra Logging Configuration
+################################################################################
 hydra:
-    job_logging:
-        root:
-            level: INFO # Set the job logging level to INFO
-        loggers:
-            flwr:
-                level: INFO
-            accelerate.utils.other:
-                level: ERROR
+  job_logging:
+    version: 1
+    disable_existing_loggers: false
+
+    formatters:
+      simple:
+        # The format string below omits time (%(asctime)s) and logger name (%(name)s)
+        # so you'll only see the level, a dash, and the actual message.
+        format: "[%(levelname)s] - %(message)s"
+
+    handlers:
+      console:
+        class: logging.StreamHandler
+        formatter: simple
+
+    root:
+      level: INFO
+      handlers: [console]
+
+    loggers:
+      flwr:
+        level: INFO
+        handlers: [console]
+        propagate: false
+
+      accelerate.utils.other:
+        level: ERROR
+        handlers: [console]
+        propagate: false

@@ -14,7 +14,7 @@ device=cuda # cpu, cuda, mps  # mps is only for M chip macs
 # img_models="resnet18"
 # img_datasets="mnist"
 # num_rounds=10
-# python -m tracefl.main --multirun device=$device client_gpu=$client_gpu  exp_key=$key_start model.name=$img_models dataset.name=$img_datasets num_clients=$num_clients num_rounds=$num_rounds clients_per_round=$clients_per_round dirichlet_alpha=$dirichlet_alpha | tee -a logs/exp_$key_start.log
+# python -m tracefl.main --multirun device=$device client_resources.num_gpus=$client_gpu  exp_key=$key_start model.name=$img_models dataset.name=$img_datasets num_clients=$num_clients num_rounds=$num_rounds clients_per_round=$clients_per_round dirichlet_alpha=$dirichlet_alpha | tee -a logs/exp_$key_start.log
 
 
 
@@ -37,7 +37,7 @@ device=cuda # cpu, cuda, mps  # mps is only for M chip macs
 # model_names="densenet121"
 # # dataset_names="pathmnist,organamnist,cifar10,mnist"
 # dataset_names="mnist"
-# python -m tracefl.main --multirun device=$device client_gpu=$client_gpu data_dist.dist_type=$dist_type dirichlet_alpha=$dirichlet_alpha label2flip=$label2flip noise_rate=$label2flip  faulty_clients_ids=$faulty_clients_ids exp_key=$key_start model.name=$model_names dataset.name=$dataset_names num_clients=$num_clients num_rounds=$num_rounds clients_per_round=$clients_per_round | tee -a logs/exp$key_start.log
+# python -m tracefl.main --multirun device=$device client_resources.num_gpus=$client_gpu data_dist.dist_type=$dist_type dirichlet_alpha=$dirichlet_alpha label2flip=$label2flip noise_rate=$label2flip  faulty_clients_ids=$faulty_clients_ids exp_key=$key_start model.name=$model_names dataset.name=$dataset_names num_clients=$num_clients num_rounds=$num_rounds clients_per_round=$clients_per_round | tee -a logs/exp$key_start.log
 
 
 
@@ -50,7 +50,7 @@ clients_per_round=2 #10
 dp_noise=0.001 #0.012
 dp_clip=15
 client_gpu=1
-python -m tracefl.main --multirun device=$device client_gpu=$client_gpu exp_key=DP-text model.name="openai-community/openai-gpt" dataset.name="dbpedia_14" num_clients=$num_clients num_rounds=$num_rounds clients_per_round=$clients_per_round dirichlet_alpha=0.3 noise_multiplier=$dp_noise clipping_norm=$dp_clip | tee -a logs/train_dp_exp_text.log
+python -m tracefl.main --multirun device=$device client_resources.num_gpus=$client_gpu exp_key=DP-text model.name="openai-community/openai-gpt" dataset.name="dbpedia_14" num_clients=$num_clients num_rounds=$num_rounds clients_per_round=$clients_per_round dirichlet_alpha=0.3 noise_multiplier=$dp_noise clipping_norm=$dp_clip | tee -a logs/train_dp_exp_text.log
 
 
 

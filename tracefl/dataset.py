@@ -62,7 +62,7 @@ def get_clients_server_data(cfg):
         dataset_key += f"{k}:{v}-"
 
     if dataset_key in cache.keys()  and cfg.check_dataset_cache:
-        logging.warning(
+        logging.info(
             f"\nLoading dataset from cache {cache_path}: {dataset_key}\n")
         ds_dict   = cache[dataset_key]       
     else:

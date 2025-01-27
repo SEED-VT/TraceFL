@@ -136,10 +136,7 @@ Inside the container, you can run all commands exactly as described below. -->
 
 We provide a tiny test script to confirm correct installation in under 5 minutes:
 ```bash
-# Inside your Docker container or after activating the tracefl conda env:
-python -m tracefl.main --model=resnet18 --dataset=mnist \
-  --num_clients=2 --clients_per_round=2 --num_rounds=1 \
-  --client.epochs=1 --batch_size=8
+python -m tracefl.main dirichlet_alpha=0.1 
 ```
 **Expected Outcome**:  
 - The script trains a small FL setup with 2 clients on MNIST for 1 round.  

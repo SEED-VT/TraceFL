@@ -1,13 +1,13 @@
 import logging
 import time
+import torch 
 from diskcache import Index
-from multiprocessing import Pool
+
 from tracefl.dataset import get_clients_server_data
 from tracefl.fl_provenance_modules import FederatedProvTrue
 from tracefl.utils import get_prov_eval_metrics
 from tracefl.models import test_neural_network
 from tracefl.neuron_provenance import NeuronProvenance
-import torch 
 from tracefl.differential_testing import round_lambda_fed_debug_func
 
 class FederatedProvFalse(FederatedProvTrue):
@@ -173,21 +173,22 @@ class FederatedProvFalse(FederatedProvTrue):
             target_l = target_labels[idx]
             responsible_clients = [f"{c}" for c in self.train_cfg.faulty_clients_ids]
 
-            res_c_string = ','.join(map(str, responsible_clients))
+            # res_c_string = ','.join(map(str, responsible_clients))
+            res_c_string = ','.join(map(str, [f"c{c}" for c in responsible_clients]))
 
             logging.info(
                 f'            *********** Input Label: {target_l}, Responsible Client(s): {res_c_string}  *************')
 
             if traced_client in responsible_clients:
                 logging.info(
-                    f"     Traced Client: c{traced_client} || Prediction = True")
+                    f"     Traced Client: c{traced_client} || Tracing = Correct")
                 correct_tracing += 1
                 predicted_labels.append(1)
                 true_labels.append(1)
             else:
                 logging.info(
 
-                    f"     Traced Client: c{traced_client} || Prediction = False")
+                    f"     Traced Client: c{traced_client} || Tracing = Wrong")
                 predicted_labels.append(0)
                 true_labels.append(1)
 
@@ -201,20 +202,20 @@ class FederatedProvFalse(FederatedProvTrue):
 
             client2prov_score = {f'c{c}': round(
                 p, 2) for c, p in client2prov.items()}
-            logging.info(f"    Client Prov Score:     {client2prov_score}")
-            logging.info(f"    C2nk_label_{target_l}:      {c2nk_label}")
-            logging.info(f"    C2nk_batches     :     {c2nk_batches}")
-            logging.info(f"    C2nk_total       :     {c2nk_total}")
+            logging.info(f"    TraceFL Clients Contributions Rank:     {client2prov_score}")
+            # logging.info(f"    C2nk_label_{target_l}:      {c2nk_label}")
+            # logging.info(f"    C2nk_batches     :     {c2nk_batches}")
+            # logging.info(f"    C2nk_total       :     {c2nk_total}")
 
-            c_label = max(c2nk_label, key=c2nk_label.get)  # type: ignore
-            c_batch = max(c2nk_batches, key=c2nk_batches.get)  # type: ignore
-            logging.info(
-                f'    {c_label} has most label-{target_l} = {c2nk_label[c_label]} || {c_batch} has max data = {c2nk_batches[c_batch]}')
+            # c_label = max(c2nk_label, key=c2nk_label.get)  # type: ignore
+            # c_batch = max(c2nk_batches, key=c2nk_batches.get)  # type: ignore
+            # logging.info(
+            #     f'    {c_label} has most label-{target_l} = {c2nk_label[c_label]} || {c_batch} has max data = {c2nk_batches[c_batch]}')
             logging.info('\n')
 
         eval_metrics = get_prov_eval_metrics(true_labels, predicted_labels)
 
-        print(f'eval metrics {eval_metrics}')
+        # print(f'eval metrics {eval_metrics}')
 
         a = correct_tracing / len(input2prov)
         assert a == eval_metrics['Accuracy'], "Accuracy mismatch"
@@ -234,7 +235,7 @@ class FederatedProvFalse(FederatedProvTrue):
         eval_metrics = self._computeEvalMetrics(input2prov)
         end_time = time.time()
 
-        logging.info(f"[R {self.round_id}] Provenance Accuracy %:= {eval_metrics['Accuracy']} || Total Inputs Used In Prov: {len(self.subset_test_data)} || GM_(loss, acc) ({self.loss},{self.acc})")
+        logging.info(f"[Round {self.round_id}] TraceFL Localization Accuracy = {eval_metrics['Accuracy'] *100} || Total Inputs Used In Prov: {len(self.subset_test_data)} || GM_(loss, acc) ({self.loss},{self.acc})")
         # wandb.log(
         #     {"prov_accuracy": eval_metrics['accuracy'], 'gm_loss': self.loss, 'gm_acc': self.acc})
 
@@ -334,24 +335,8 @@ def _run_and_save_prov_result_in_cache(cfg):
 
     start_time = time.time()
 
-    logging.info(f'Number of parallel processes: {cfg.parallel_processes}')
-
-    if cfg.parallel_processes > 1:
-        with Pool(processes=cfg.parallel_processes) as p:
-            logging.info(
-                f"Running provenance analysis for {len(rounds_keys)} rounds in parallel...")
-            round2prov_result = p.starmap(_roundLambdaProv, [(
-                cfg, round_key, central_test_data) for round_key in rounds_keys])
-            p.close()
-            p.join()
-        
-        
-
-    else:
-        logging.info(
-            f"Running provenance analysis for {len(rounds_keys)} rounds sequentially...")
-        round2prov_result = [_roundLambdaProv(
-            cfg, round_key, central_test_data) for round_key in rounds_keys]
+    round2prov_result = [_roundLambdaProv(
+        cfg, round_key, central_test_data) for round_key in rounds_keys]
 
     end_time = time.time()
     avg_prov_time_per_round = -1
@@ -361,18 +346,21 @@ def _run_and_save_prov_result_in_cache(cfg):
     
 
     # average accuracy of all rounds in provenance
-    acc_list = [r['eval_metrics']['Accuracy'] for r in round2prov_result if r['eval_metrics'].get('Accuracy', None) is not None]
-    assert len([a for a in acc_list if a < 0 ]) == 0, "Accuracy out of range"
+    # acc_list = [r['eval_metrics']['Accuracy'] for r in round2prov_result if 'eval_metrics' in r and r['eval_metrics'].get('Accuracy', None) is not None]
+    # assert len([a for a in acc_list if a < 0 ]) == 0, "Accuracy out of range"
 
-    avg_prov_accuracy = sum(acc_list) / len(acc_list) if len(acc_list) > 0 else -1
+    # avg_prov_accuracy = sum(acc_list) / len(acc_list) if len(acc_list) > 0 else -1
 
     prov_results_cache[cfg.exp_key] = {
         "round2prov_result": round2prov_result, "prov_cfg": cfg, "training_cache_path": train_cache_path, "avg_prov_time_per_round": avg_prov_time_per_round}
 
-    logging.info(
-        f"Provenance results saved for {cfg.exp_key}, avg provenance time per round: {avg_prov_time_per_round} seconds")
-    logging.info(
-        f"Average provenance accuracy: {avg_prov_accuracy}")
+    # logging.info(
+    #     f"Provenance results saved for {cfg.exp_key}, avg provenance time per round: {avg_prov_time_per_round} seconds")
+    # logging.info(
+    #     f"Average Localization Accuracy: {avg_prov_accuracy}")
+    logging.info(f"Provenance results saved")
+
+
 
 
 def _get_all_train_cfgs_from_train_cache(cache):

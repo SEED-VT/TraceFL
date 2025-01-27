@@ -252,7 +252,7 @@ def _train_transformer(tconfig):
         eval_strategy="no",
         per_device_train_batch_size=tconfig["batch_size"],
         per_device_eval_batch_size=tconfig['batch_size'],
-        fp16=True,
+        # fp16=True,
         disable_tqdm=True,
         report_to="none"
     )

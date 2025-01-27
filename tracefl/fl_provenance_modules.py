@@ -293,21 +293,21 @@ class FederatedProvTrue:
             responsible_clients = [
                 cid for cid, c_labels in client2class.items() if target_l in c_labels]
 
-            res_c_string = ','.join(map(str, responsible_clients))
+            res_c_string = ','.join(map(str, [f"c{c}" for c in responsible_clients]))
 
             logging.info(
                 f'            *********** Input Label: {target_l}, Responsible Client(s): {res_c_string}  *************')
 
             if target_l in client2class[traced_client]:
                 logging.info(
-                    f"     Traced Client: c{traced_client} || Prediction = True")
+                    f"     Traced Client: c{traced_client} || Tracing = Correct")
                 correct_tracing += 1
                 predicted_labels.append(1)
                 true_labels.append(1)
             else:
                 logging.info(
 
-                    f"     Traced Client: c{traced_client} || Prediction = False")
+                    f"     Traced Client: c{traced_client} || Tracing = Wrong")
                 predicted_labels.append(0)
                 true_labels.append(1)
 
@@ -321,23 +321,23 @@ class FederatedProvTrue:
 
             client2prov_score = {f'c{c}': round(
                 p, 2) for c, p in client2prov.items()}
-            logging.info(f"    Client Prov Score:     {client2prov_score}")
-            logging.info(f"    C2nk_label_{target_l}:      {c2nk_label}")
-            logging.info(f"    C2nk_batches     :     {c2nk_batches}")
-            logging.info(f"    C2nk_total       :     {c2nk_total}")
+            logging.info(f"    TraceFL Clients Contributions Rank:     {client2prov_score}")
+            # logging.info(f"    C2nk_label_{target_l}:      {c2nk_label}")
+            # logging.info(f"    C2nk_batches     :     {c2nk_batches}")
+            # logging.info(f"    C2nk_total       :     {c2nk_total}")
 
-            c_label = max(c2nk_label, key=c2nk_label.get)  # type: ignore
-            c_batch = max(c2nk_batches, key=c2nk_batches.get)  # type: ignore
-            logging.info(
-                f'    {c_label} has most label-{target_l} = {c2nk_label[c_label]} || {c_batch} has max data = {c2nk_batches[c_batch]}')
+            # c_label = max(c2nk_label, key=c2nk_label.get)  # type: ignore
+            # c_batch = max(c2nk_batches, key=c2nk_batches.get)  # type: ignore
+            # logging.info(
+            #     f'    {c_label} has most label-{target_l} = {c2nk_label[c_label]} || {c_batch} has max data = {c2nk_batches[c_batch]}')
             logging.info('\n')
 
         eval_metrics = get_prov_eval_metrics(true_labels, predicted_labels)
 
-        print(f'eval metrics {eval_metrics}')
+        # print(f'eval metrics {eval_metrics}')
 
-        a = correct_tracing / len(input2prov)
-        assert a == eval_metrics['Accuracy'], "Accuracy mismatch"
+        # a = correct_tracing / len(input2prov)
+        # assert a == eval_metrics['Accuracy'], "Accuracy mismatch"
         return eval_metrics
 
     def run(self) -> Dict[str, any]:  # type: ignore
@@ -361,7 +361,7 @@ class FederatedProvTrue:
         eval_metrics = self._computeEvalMetrics(input2prov)
         end_time = time.time()
 
-        logging.info(f"[R {self.round_id}] Provenance Accuracy %:= {eval_metrics['Accuracy']} || Total Inputs Used In Prov: {len(self.subset_test_data)} || GM_(loss, acc) ({self.loss},{self.acc})")
+        logging.info(f"[Round {self.round_id}] TraceFL Localization Accuracy = {eval_metrics['Accuracy']*100} || Total Inputs Used In Prov: {len(self.subset_test_data)} || GM_(loss, acc) ({self.loss},{self.acc})")
         # wandb.log(
         #     {"prov_accuracy": eval_metrics['accuracy'], 'gm_loss': self.loss, 'gm_acc': self.acc})
 

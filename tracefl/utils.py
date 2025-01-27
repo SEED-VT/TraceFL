@@ -12,12 +12,10 @@ import numpy as np
 
 def get_backend_config(cfg): 
 
-    client_resources = {"num_cpus": cfg.client_cpus.num_cpus}
+    client_resources = {"num_cpus": cfg.client_resources.cpus}
     if cfg.device == "cuda":
-        client_resources = {
-            "num_gpus": cfg.client_resources.num_gpus,
-            "num_cpus": cfg.client_cpus.num_cpus,
-        }
+        client_resources['num_gpus'] = cfg.client_resources.gpus 
+            
 
     backend_config = {
         "client_resources": client_resources,
@@ -69,29 +67,12 @@ def set_exp_key(cfg):
 
 
 def get_prov_eval_metrics(labels, predicted_labels):
-    f_beta_weighted = metrics.fbeta_score(
-        labels, predicted_labels, beta=0.5, average="weighted"
-    )
-    f_beta_binary = metrics.fbeta_score(labels, predicted_labels, beta=0.5)
-
-    f1score_binary = metrics.f1_score(labels, predicted_labels)
-    f1score_weighted = metrics.f1_score(
-        labels, predicted_labels, average="weighted")
-
-    precesion = metrics.precision_score(labels, predicted_labels)
-    recall = metrics.recall_score(labels, predicted_labels)
+    
     accuracy = metrics.accuracy_score(labels, predicted_labels)
-    cm = metrics.confusion_matrix(labels, predicted_labels)
+    
 
-    answer = {
-        "F Beta (Weighted)": f_beta_weighted,
-        "F Beta": f_beta_binary,
-        "F1 (Weighted)": f1score_weighted,
-        "F1": f1score_binary,
-        "Precision": precesion,
-        "Recall": recall,
+    answer = {    
         "Accuracy": accuracy,
-        "confusion_matrix": cm,
     }
 
     return answer

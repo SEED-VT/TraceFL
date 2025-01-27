@@ -1,8 +1,8 @@
 parallel_processes: 0 # parallelizing provenance
 client_weights_normalization: False # provenance
 
-check_train_cache: True # if set to True then if the config is already in the cache then it will not retrain.
-check_prov_cache: True
+check_train_cache: true # if set to True then if the config is already in the cache then it will not retrain.
+check_prov_cache: false
 check_dataset_cache: True
 
 
@@ -34,8 +34,6 @@ model_arch:
     openai-community/openai-gpt: transformer
     google-bert/bert-base-cased: transformer
     google-bert/bert-large-cased: transformer
-    # meta-llama/Llama-2-7b-hf: transformer
-    # FacebookAI/roberta-base: transformer
     Intel/dynamic_tinybert: transformer
     resnet18: cnn
     densenet121: cnn

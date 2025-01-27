@@ -139,8 +139,6 @@ def line_plot(axis, x, y, label, linestyle, linewidth=2):
     axis.plot(x, y, label=label, linestyle=linestyle, linewidth=linewidth)
 
 
-
-
 def _save_plot(fig, filename_base):
     for ext in ['png', 'svg', 'pdf']:
         directory_path = Path(f"graphs/{ext}s")
@@ -988,8 +986,7 @@ def get_experiment_results_as_dataframe(cfg):
     return df
 
 
-
-def feddebug_comparison_table(cfg):    
+def feddebug_comparison_table(cfg):
     def _get_table_dict_dirichlet(df, alpha):
         mname = _get_paper_name(df['Model'][0])
         dname = _get_paper_name(df['Dataset'][0])
@@ -1001,14 +998,24 @@ def feddebug_comparison_table(cfg):
             return {'Model': mname, 'Dataset': dname, 'Dirichlet Distribution ($\\alpha$)': alpha,   'Avg. FedDebug Time (s)': df['FedDebug avg_fault_localization_time'].mean(), 'Avg. TraceFL Time (s)': df['avg_prov_time_per_input'].mean(), 'FedDebug Accuracy': df['FedDebug Accuracy'].mean(),  'TraceFL Accuracy': df['Accuracy'].mean()*100}
 
     comparison_df = get_experiment_results_as_dataframe(cfg)
-    comparison_dict  =  _get_table_dict_dirichlet(comparison_df, alpha=cfg.dirichlet_alpha)
+    comparison_dict = _get_table_dict_dirichlet(
+        comparison_df, alpha=cfg.dirichlet_alpha)
 
-    df = pd.DataFrame([comparison_dict]) 
+    df = pd.DataFrame([comparison_dict])
     print(df)
-    
 
-    
 
+
+def _temp_save(filename_base):
+    for ext in ['png', 'svg', 'pdf']:
+        directory_path = Path(f"graphs/{ext}s")
+        if not directory_path.exists():
+            directory_path.mkdir(parents=True, exist_ok=True)
+            print(f"Directory '{directory_path}' created.")
+        plt.savefig(f"graphs/{ext}s/{filename_base}.{ext}",
+                    bbox_inches='tight', format=ext, dpi=600)
+
+    plt.close('all')
 
 
 def plot_tracefl_configuration_results(cfg):
@@ -1022,15 +1029,14 @@ def plot_tracefl_configuration_results(cfg):
         df['test_data_acc'] = df['test_data_acc'] * 100
 
         ax.plot(range(len(df)), smooting_filter(
-            df['Accuracy']), label='TraceFL-Smooth')
+            df['Accuracy']), label='TraceFL Accuracy')
         ax.plot(range(len(df)), smooting_filter(
-            df['test_data_acc']), label='FL Training-Smooth')
+            df['test_data_acc']), label='FL Training Accuracy')
         temp_dict = {'Average Accuracy': df['Accuracy'].mean(
         ), 'Total Rounds': len(df), 'Total Accuracy': sum(df['Accuracy'])}
 
-        global abc
-        title = (f"{full_abc[abc]}) {dataset}\n{model}")
-        abc += 1
+        
+        title = (f"{dataset}\n{model}")
         ax.text(0.5, 0.5, f"TraceFL \n Avg. Acc {temp_dict['Average Accuracy']:.1f}",
                 horizontalalignment='center',
                 verticalalignment='center',
@@ -1040,12 +1046,6 @@ def plot_tracefl_configuration_results(cfg):
         ax.legend()
         all_config_summary.append(temp_dict)
 
-    # for alpha in [0.1, 0.2, 0.3]:
-    alpha = 0.3
-    global abc
-    abc = 0
-    full_abc = ['a', 'b', 'c', 'd', 'e', 'f',
-                'g', 'h', 'i', 'j', 'k', 'l', 'm']
     width = 3.3374*1.6
     height = 3.3374 * 1.5
     fig, all_axes = _call_before_everyPlot(
@@ -1055,8 +1055,6 @@ def plot_tracefl_configuration_results(cfg):
 
     _plot(all_axes)
 
-    # _fix_legend(all_axes, fig, bbox_to_anchor=(0.5, 0.04))
-
     fig.supxlabel('Communication Rounds', fontsize=12)
     fig.supylabel('Accuracy (%)', fontsize=12, )
 
@@ -1065,13 +1063,11 @@ def plot_tracefl_configuration_results(cfg):
     average_accuracy = total_accuracy / total_rounds
     fig.subplots_adjust(hspace=0.0, wspace=0.0)
     plt.tight_layout()
-    fname = f"text_image_audio_classification_results_{alpha}_alpha"
+    fname = f""
+    plt.savefig(f"provenance_report/experiment.png", bbox_inches='tight', format="png", dpi=600)
+
+    plt.close('all')
     _save_plot(fig, fname)
     logging.info(f"-------------- {fname} --------------")
     logging.info(f"Total Rounds: {total_rounds}")
-    logging.info(f"Total Accuracy: {total_accuracy}")
     logging.info(f"Average Accuracy: {average_accuracy}")
-    logging.info(f'Total Models Trained  {total_rounds * 10}')
-
-    # return the above metrics in a dict
-    return {'Total Rounds': total_rounds, 'Total Accuracy': total_accuracy, 'Average Accuracy': average_accuracy, 'Total Models Trained': total_rounds * 10}

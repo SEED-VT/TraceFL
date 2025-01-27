@@ -57,7 +57,7 @@ class NeuronProvenance:
             self.layer_importance = [1 for _ in range(len(getAllLayers(gmodel)))]        
         
         #logging.info(f'Layer importance: {self.layer_importance}')
-        logging.warning(f'Layer importance: {self.layer_importance}')
+        # logging.warning(f'Layer importance: {self.layer_importance}')
         
         
         logging.info(f'client ids: {self.client_ids}')
