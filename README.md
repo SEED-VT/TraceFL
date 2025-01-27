@@ -1,30 +1,35 @@
 # TraceFL: Interpretability-Driven Debugging in Federated Learning via Neuron Provenance
 
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/warisgill/TraceFL-Artifact/blob/main/artifact.ipynb)
-![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SEED-VT/TraceFL/blob/main/artifact.ipynb)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 
 **Paper:** [arXiv Preprint](https://arxiv.org/abs/2312.13632)  
-**Artifact Archive:** [Zenodo Permanent Record](https://zenodo.org/records/12345678)
-
+**Artifact Archive:** [Zenodo Permanent Record](https://zenodo.org/records/12345678)  
 **Authors:** [Waris Gill](https://people.cs.vt.edu/waris/), [Ali Anwar](https://chalianwar.github.io/), [Muhammad Ali Gulzar](https://people.cs.vt.edu/~gulzar/)
+
 
 ## 1. Purpose
 **TraceFL** is the first interpretabilty techniques that enables interpretability in Federated Learning (FL) by identifying clients responsible for specific global model predictions.  By making such provenance information explicit, developers can **exclude** problematic clients, **reward** high-quality clients, or **debug** misclassifications more systematically.
 
-![TraceFL Working Descripiton](tracefl.png)
+<!-- ![TraceFL Working Descripiton](tracefl.png) -->
+<img src="tracefl.png" alt="Interpretability in Federated Learning using TraceFL" width="600"/>
 
-<!-- Add a figure here -->
+
+
 
 **This artifact provides:**
 
 -  Complete implementation of the TraceFL framework
 -  Pre-configured experiments replicating all paper results
 -  Cross-domain support for image/text classification models (e.g., GPT )
-- **One-click reproducibility on Google Colab.**
-<!-- add the colab icon above -->
+- **One-click reproducibility on Google Colab.** [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SEED-VT/TraceFL/blob/main/artifact.ipynb)
+
+
 
 
 **Badges Claimed**:
+<!-- add the actual zenodo link -->
 - **Artifacts Available**: All our code and documentation are publicly and permanently archived ([Zenodo DOI](https://doi.org/xx.xxxx/zenodo.xxxxxx)).
 - **Artifacts Functional**: We include step-by-step installation scripts, test commands, and evidence of correct behavior in a minimal environment.
 - **Artifacts Reusable**: We offer detailed documentation, consistent structure, modular design, a permissive license, and instructions for extending the framework to new models/datasets.
@@ -33,12 +38,11 @@
 
 ## 2. Provenance
 
-- **Paper Preprint:** [ICSE 2025 Camera-Ready](https://arxiv.org/pdf/2312.13632)
-  
-- **Archived Artifact**: The exact version of this repository (including code, configurations, and instructions) is archived at **[Zenodo](https://doi.org/xx.xxxx/zenodo.xxxxxx)**.  
-- **GitHub Repository** (development version): [GitHub - warisgill/TraceFL-Artifact](https://github.com/warisgill/TraceFL-Artifact) (non-archival).  
-
-- **License:** [MIT License](LICENSE)
+- **Paper Preprint:** [ICSE 2025 Camera-Ready](https://arxiv.org/pdf/2312.13632) 
+<!-- add the actual zenodo link -->
+- **Archived Artifact**: The exact version of this repository (including code, configurations, and instructions) is archived at **[Zenodo](https://doi.org/xx.xxxx/zenodo.xxxxxx)**.
+- **GitHub Repository** (development version): [GitHub - SEED-VT/TraceFL](https://github.com/SEED-VT/TraceFL) (non-archival).  
+- **License:** [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 
 ## 3. Data
@@ -66,14 +70,13 @@ TraceFL is a **domain-agnostic** framework carefully designed to handle various 
 
 ## 4. Setup
 
-
 **System Requirements**:
 - **Orginal Paper Hardware Setup**: To resemble real-world FL and do large scale simulations, we deploy our experiments in [Flower FL framework](https://flower.ai/), running on an enterprise-level cluster of six NVIDIA DGX A100 nodes. Each node is equipped with 2048 GB of memory, at least 128 cores, and an A100 GPU with 80 GB of memory.
 
-- **Artifact Hardware Setup**: We change the default configuration in `tracefl/conf/base.yaml` to run representative experiments on Google Colab even with only 2 cpu cores, 12 GB of System RAM and 15 GB of GPU RAM. 
+- **Artifact Hardware Setup**: We change the default configuration in [tracefl/conf/base.yaml](tracefl/conf/base.yaml) to run representative experiments on Google Colab even with only 2 cpu cores, 12 GB of System RAM and 15 GB of GPU RAM. 
 
 
-We provide **three** approaches to setting up the environment:
+We provide **two** approaches to setting up the environment:
 
 ## 4.1 Quick Colab Setup 
 
@@ -93,24 +96,21 @@ To quickly validate the artifact, click the "Open in Colab" badge above. This wi
    ```
 3. **Clone and install dependencies**:
    ```bash
-   git clone https://github.com/warisgill/TraceFL-Artifact.git
-   cd TraceFL-Artifact
+   git clone https://github.com/SEED-VT/TraceFL
+   cd TraceFL
    poetry install
    ```
    **Expected Output:**  
    `✅ TraceFL installed successfully! Ready for federated interpretability!`
 
 
-
-
-
-### 4.3 Quick Docker Setup (Recommended)
+<!-- ### 4.3 Quick Docker Setup (Recommended)
 
 We offer a Docker image for consistent, frictionless installation:
 ```bash
 # 1. Clone this repository
-git clone https://github.com/warisgill/TraceFL-Artifact.git
-cd TraceFL-Artifact
+git clone https://github.com/SEED-VT/TraceFL
+cd TraceFL
 
 # 2. Build the Docker image
 docker build -t tracefl:latest .
@@ -118,7 +118,7 @@ docker build -t tracefl:latest .
 # 3. Run the container (maps a local port if needed)
 docker run -it --gpus all --name tracefl_container tracefl:latest
 ```
-Inside the container, you can run all commands exactly as described below.
+Inside the container, you can run all commands exactly as described below. -->
 
 
 
@@ -170,7 +170,7 @@ python -m tracefl.main --model=resnet18 --dataset=mnist \
      ```
 
 3. **Google Colab**:  
-   - Open [artifact.ipynb](https://colab.research.google.com/github/warisgill/TraceFL-Artifact/blob/main/artifact.ipynb) directly in Colab for a one-click environment.
+   - Open [artifact.ipynb](https://colab.research.google.com/github/SEED-VT/TraceFL/blob/main/artifact.ipynb) directly in Colab for a one-click environment.
 
 ### 5.3 Extending/Repurposing TraceFL
 
@@ -187,7 +187,7 @@ python -m tracefl.main --model=resnet18 --dataset=mnist \
 
 
 ## 6 License
-This artifact is released under [MIT License](LICENSE), enabling:
+This artifact is released under [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE), enabling:
 - Commercial use
 - Modification
 - Distribution
@@ -213,7 +213,7 @@ This artifact is released under [MIT License](LICENSE), enabling:
 
 ## 9. Contact and Support
 
-- For any installation or usage issues, please open a GitHub Issue at [TraceFL-Artifact Issues](https://github.com/warisgill/TraceFL-Artifact/issues).  
+- For any installation or usage issues, please open a GitHub Issue at [TraceFL Issues](https://github.com/SEED-VT/TraceFL/issues).  
 - For questions related to the paper or advanced usage, contact the authors directly via their homepages.
 
 
