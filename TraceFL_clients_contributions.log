@@ -1,0 +1,83 @@
+[INFO] - Training already completed: Temp--resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients20-fedavg-(R3-clientsPerR4)-non_iid_dirichlet0.1-batch32-epochs2-lr0.001, len of results: 4
+[INFO] - Running Provenance
+[INFO] - Starting provenance analysis for Temp--resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients20-fedavg-(R3-clientsPerR4)-non_iid_dirichlet0.1-batch32-epochs2-lr0.001...
+[INFO] - 
+Loading dataset from cache storage_of_exps/cache_of_fl_datasets: -dist_type:non_iid_dirichlet-num_clients:20-batch_size:32-dirichlet_alpha:0.1-dname:mnist-mname:resnet18-storage_dir:storage_of_exps/-max_per_client_data_size:2048-max_server_data_size:2048-
+
+[INFO] - Total test data size: 2048
+[INFO] - 
+
+             ----------Round key  Temp--resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients20-fedavg-(R3-clientsPerR4)-non_iid_dirichlet0.1-batch32-epochs2-lr0.001-round:1 -------------- 
+
+[INFO] - Sanity check: 1.0
+[INFO] - client ids: ['19', '10', '14', '1']
+[INFO] -             *********** Input Label: 4, Responsible Client(s): c10,c1  *************
+[INFO] -      Traced Client: c10 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c10': 0.99, 'c1': 0.01, 'c19': 0.0, 'c14': 0.0}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 4, Responsible Client(s): c10,c1  *************
+[INFO] -      Traced Client: c10 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c10': 0.99, 'c1': 0.01, 'c19': 0.0, 'c14': 0.0}
+[INFO] - 
+
+[INFO] - [Round 1] TraceFL Localization Accuracy = 100.0 || Total Inputs Used In Prov: 2 || GM_(loss, acc) (3.1374173164367676,0.099609375)
+[INFO] - 
+
+             ----------Round key  Temp--resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients20-fedavg-(R3-clientsPerR4)-non_iid_dirichlet0.1-batch32-epochs2-lr0.001-round:2 -------------- 
+
+[INFO] - Sanity check: 1.0
+[INFO] - client ids: ['1', '10', '17', '11']
+[INFO] -             *********** Input Label: 4, Responsible Client(s): c1,c10  *************
+[INFO] -      Traced Client: c10 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c10': 0.99, 'c1': 0.01, 'c11': 0.0, 'c17': 0.0}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 4, Responsible Client(s): c1,c10  *************
+[INFO] -      Traced Client: c10 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c10': 0.99, 'c1': 0.01, 'c11': 0.0, 'c17': 0.0}
+[INFO] - 
+
+[INFO] - [Round 2] TraceFL Localization Accuracy = 100.0 || Total Inputs Used In Prov: 2 || GM_(loss, acc) (3.9169530868530273,0.099609375)
+[INFO] - 
+
+             ----------Round key  Temp--resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients20-fedavg-(R3-clientsPerR4)-non_iid_dirichlet0.1-batch32-epochs2-lr0.001-round:3 -------------- 
+
+[INFO] - Sanity check: 1.0
+[INFO] - client ids: ['16', '1', '9', '19']
+[INFO] -             *********** Input Label: 0, Responsible Client(s): c16,c1,c19  *************
+[INFO] -      Traced Client: c16 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c16': 0.95, 'c1': 0.03, 'c19': 0.02, 'c9': 0.0}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 0, Responsible Client(s): c16,c1,c19  *************
+[INFO] -      Traced Client: c16 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c16': 0.95, 'c1': 0.02, 'c19': 0.02, 'c9': 0.0}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 5, Responsible Client(s): c1,c9  *************
+[INFO] -      Traced Client: c1 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.58, 'c9': 0.28, 'c16': 0.07, 'c19': 0.07}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 5, Responsible Client(s): c1,c9  *************
+[INFO] -      Traced Client: c1 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.63, 'c9': 0.26, 'c16': 0.06, 'c19': 0.05}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 8, Responsible Client(s): c1  *************
+[INFO] -      Traced Client: c1 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.98, 'c16': 0.01, 'c9': 0.01, 'c19': 0.01}
+[INFO] - 
+
+```
+[INFO] -             *********** Input Label: 8, Responsible Client(s): c1  *************
+[INFO] -      Traced Client: c1 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.98, 'c16': 0.01, 'c19': 0.01, 'c9': 0.01}
+[INFO] - 
+
+[INFO] - [Round 3] TraceFL Localization Accuracy = 100.0 || Total Inputs Used In Prov: 6 || GM_(loss, acc) (3.24006986618042,0.18896484375)
+[INFO] - ----------------------------
+[INFO] - Total Rounds: 3
+[INFO] - TraceFL Average Localization Accuracy: 100.0
+```

@@ -132,19 +132,28 @@ Inside the container, you can run all commands exactly as described below. -->
 
 ## 5. Usage
 
-### 5.1 Quick “Smoke Test” (Minimal Example)
+### 5.1 Fully Functional TraceFL Artifact Command
 
-We provide a tiny test script to confirm correct installation in under 5 minutes:
+We configure TraceFL using a YAML file ([tracefl/conf/base.yaml](tracefl/conf/base.yaml)) or command-line arguments. Any parameter in the YAML file can be overridden by passing a flag to the `python -m tracefl.main` command (e.g., `dirichlet_alpha=0.1`). By only using this command and the YAML file, you can run all experiments in the paper. However, we provide additional scripts for specific figures/tables for convenience.
+
 ```bash
+# Run TraceFL with default configuration (base.yaml) or override. 
 python -m tracefl.main dirichlet_alpha=0.1 
 ```
 **Expected Outcome**:  
 - The script trains a small FL setup with 2 clients on MNIST for 1 round.  
 - If successful, the console logs will indicate completion with a message like:  
-  ```
-  [INFO] Training round 1/1 completed. 
-  [INFO] TraceFL debug pass completed successfully!
-  ```
+```bash
+[INFO] -             *********** Input Label: 8, Responsible Client(s): c1  *************
+[INFO] -      Traced Client: c1 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.98, 'c16': 0.01, 'c19': 0.01, 'c9': 0.01}
+[INFO] - 
+
+[INFO] - [Round 3] TraceFL Localization Accuracy = 100.0 || Total Inputs Used In Prov: 6 || GM_(loss, acc) (3.24006986618042,0.18896484375)
+[INFO] - ----------------------------
+[INFO] - Total Rounds: 3
+[INFO] - TraceFL Average Localization Accuracy: 100.0
+```
 - Total runtime is about ~2-3 minutes on CPU, <1 minute on a GPU-enabled machine.
 
 ### 5.2 Reproducing Main Paper Experiments

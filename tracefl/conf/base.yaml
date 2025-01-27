@@ -1,6 +1,6 @@
 defaults:
-    - constants # Includes all values from the file "constants.yaml"
-    - _self_ # Ensures this file’s own contents are loaded last so they can override if necessary
+  - constants # Includes all values from the file "constants.yaml"
+  - _self_ # Ensures this file’s own contents are loaded last so they can override if necessary
 
 exp_key: "Temp-" # Experiment key or name. Useful for uniquely identifying experiment runs. # This is a placeholder and typically overwritten when the final experiment runs.
 
@@ -24,54 +24,54 @@ total_gpus: 1 # Total number of GPUs available (especially relevant if device="c
 total_cpus: 2 # Total number of CPU cores available.
 
 client_resources:
-    cpus: 1 # CPU resources allocated per client (for scheduling or parallelization).
-    gpus: 1 # Fraction of GPU allocated per client. Only effective if device="cuda".
+  cpus: 1 # CPU resources allocated per client (for scheduling or parallelization).
+  gpus: 1 # Fraction of GPU allocated per client. Only effective if device="cuda".
 
 ################################################################################
 # Client Configuration
 ################################################################################
 client:
-    epochs: 2 # Number of local epochs each client performs per round.
-    lr: 0.001 # Learning rate used by each client.
+  epochs: 2 # Number of local epochs each client performs per round.
+  lr: 0.001 # Learning rate used by each client.
 
 ################################################################################
 # Model Configuration
 ################################################################################
 model:
-    name: "resnet18" # Name of the model to be used.
-    arch: ${model_arch.${model.name}} # Uses interpolation from "constants.yaml" (e.g., "cnn" or "transformer").
+  name: "resnet18" # Name of the model to be used.
+  arch: ${model_arch.${model.name}} # Uses interpolation from "constants.yaml" (e.g., "cnn" or "transformer").
 
 ################################################################################
 # Dataset Configuration
 ################################################################################
 dataset:
-    name: "mnist" # Name of the dataset (e.g., "mnist", "cifar10", "organamnist", etc.).
-    num_classes: ${dataset_classes.${dataset.name}} # Dynamically fetched from constants.yaml.
-    channels: ${dataset_channels.${dataset.name}} # Dynamically fetched from constants.yaml.
+  name: "mnist" # Name of the dataset (e.g., "mnist", "cifar10", "organamnist", etc.).
+  num_classes: ${dataset_classes.${dataset.name}} # Dynamically fetched from constants.yaml.
+  channels: ${dataset_channels.${dataset.name}} # Dynamically fetched from constants.yaml.
 
 ################################################################################
 # Federated Strategy Configuration
 ################################################################################
 strategy:
-    name: fedavg # Name of the FL strategy (e.g., "fedavg", "fedprox", etc.).
-    num_rounds: ${num_rounds} # Referencing the top-level num_rounds.
-    clients_per_round: ${clients_per_round}
-    noise_multiplier: ${noise_multiplier}
-    clipping_norm: ${clipping_norm}
+  name: fedavg # Name of the FL strategy (e.g., "fedavg", "fedprox", etc.).
+  num_rounds: ${num_rounds} # Referencing the top-level num_rounds.
+  clients_per_round: ${clients_per_round}
+  noise_multiplier: ${noise_multiplier}
+  clipping_norm: ${clipping_norm}
 
 ################################################################################
 # Data Distribution Configuration
 ################################################################################
 data_dist:
-    dist_type: non_iid_dirichlet # Defines how data is split among clients ("non_iid_dirichlet", "PathologicalPartitioner-#").
-    num_clients: ${num_clients}
-    batch_size: ${batch_size}
-    dirichlet_alpha: ${dirichlet_alpha}
-    dname: ${dataset.name} # Dataset name, used for naming or caching.
-    mname: ${model.name} # Model name, used for naming or caching.
-    storage_dir: ${storage.dir} # Base storage directory from constants.yaml.
-    max_per_client_data_size: 2048 # Optional limit on how much data each client receives.
-    max_server_data_size: 2048 # Optional limit on how much data is stored on the server.
+  dist_type: non_iid_dirichlet # Defines how data is split among clients ("non_iid_dirichlet", "PathologicalPartitioner-#").
+  num_clients: ${num_clients}
+  batch_size: ${batch_size}
+  dirichlet_alpha: ${dirichlet_alpha}
+  dname: ${dataset.name} # Dataset name, used for naming or caching.
+  mname: ${model.name} # Model name, used for naming or caching.
+  storage_dir: ${storage.dir} # Base storage directory from constants.yaml.
+  max_per_client_data_size: 2048 # Optional limit on how much data each client receives.
+  max_server_data_size: 2048 # Optional limit on how much data is stored on the server.
 
 ################################################################################
 # Experiment Flags
@@ -97,7 +97,6 @@ plotting: true # If True, generates plots or visualizations at the end of the ex
 #             accelerate.utils.other:
 #                 level: ERROR # Logging level for the Accelerate library (e.g., to suppress unnecessary logs).
 
-
 # conf.yaml (example)
 ################################################################################
 # Hydra Logging Configuration
@@ -118,14 +117,21 @@ hydra:
         class: logging.StreamHandler
         formatter: simple
 
+      file:
+        class: logging.FileHandler
+        formatter: simple
+        filename: TraceFL_clients_contributions.log
+        # Optional: decide append vs overwrite
+        mode: w # 'a' for append, 'w' for overwrite
+
     root:
       level: INFO
-      handlers: [console]
+      handlers: [console, file]
 
     loggers:
       flwr:
         level: INFO
-        handlers: [console]
+        handlers: [console, file]
         propagate: false
 
       accelerate.utils.other:
