@@ -13,10 +13,10 @@ noise_multiplier: -1
 clipping_norm: -1
 
 total_gpus: 1
-total_cpus: 12
-client_cpus: 1
-client_gpu: 0.1
-device: "cuda"
+total_cpus: 2
+client_cpus: 2
+client_gpu: 1
+device: "cpu" # "cpu" or "cuda"
 
 client:
     epochs: 2
@@ -51,12 +51,15 @@ data_dist:
 
 
 
-do_training: False
-do_provenance: False
-plotting: False
-do_full_cache_provenance: False
-dry_run: False
-convert_cache_to_csv: False
+
+do_full_cache_provenance: false
+dry_run: false
+
+do_training: true
+do_provenance: true
+convert_cache_to_csv: true
+enable_beta: true
+plotting: true
 
 
     

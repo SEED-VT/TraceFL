@@ -9,7 +9,6 @@ from tracefl.models import test_neural_network
 from tracefl.neuron_provenance import NeuronProvenance
 import torch 
 from tracefl.differential_testing import round_lambda_fed_debug_func
-from joblib import Parallel, delayed
 
 class FederatedProvFalse(FederatedProvTrue):
     def __init__(self, cfg, round_key, central_test_data, t=None):
@@ -359,12 +358,21 @@ def _run_and_save_prov_result_in_cache(cfg):
 
     if len(rounds_keys) > 0:
         avg_prov_time_per_round = (end_time - start_time) / len(rounds_keys)
+    
+
+    # average accuracy of all rounds in provenance
+    acc_list = [r['eval_metrics']['Accuracy'] for r in round2prov_result if r['eval_metrics'].get('Accuracy', None) is not None]
+    assert len([a for a in acc_list if a < 0 ]) == 0, "Accuracy out of range"
+
+    avg_prov_accuracy = sum(acc_list) / len(acc_list) if len(acc_list) > 0 else -1
 
     prov_results_cache[cfg.exp_key] = {
         "round2prov_result": round2prov_result, "prov_cfg": cfg, "training_cache_path": train_cache_path, "avg_prov_time_per_round": avg_prov_time_per_round}
 
     logging.info(
         f"Provenance results saved for {cfg.exp_key}, avg provenance time per round: {avg_prov_time_per_round} seconds")
+    logging.info(
+        f"Average provenance accuracy: {avg_prov_accuracy}")
 
 
 def _get_all_train_cfgs_from_train_cache(cache):

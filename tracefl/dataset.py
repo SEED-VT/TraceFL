@@ -18,7 +18,6 @@ from tracefl.dataset_preparation import ClientsAndServerDatasets, getLabelsCount
 from diskcache import Index
 from flwr_datasets.visualization import plot_label_distributions
 import matplotlib.pyplot as plt
-from pathvalidate import sanitize_filename
 import numpy as np
 import collections
 

@@ -52,6 +52,14 @@ class NeuronProvenance:
         self.c2nk = c2nk  # client2num_examples
         self.client_ids = list(self.c2model.keys())
         self.layer_importance = compute_importance(len(getAllLayers(gmodel)))
+        
+        if cfg.enable_beta == False:
+            self.layer_importance = [1 for _ in range(len(getAllLayers(gmodel)))]        
+        
+        #logging.info(f'Layer importance: {self.layer_importance}')
+        logging.warning(f'Layer importance: {self.layer_importance}')
+        
+        
         logging.info(f'client ids: {self.client_ids}')
         self.pk = {
             cid: self.c2nk[cid] / sum(self.c2nk.values()) for cid in self.c2nk.keys()}

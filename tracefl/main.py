@@ -7,7 +7,6 @@ model is going to be evaluated, etc. At the end, this script saves the results.
 import gc
 import logging
 import random
-import time
 import copy
 
 import flwr as fl
@@ -20,23 +19,11 @@ from tracefl.client import FlowerClient, get_parameters, set_parameters
 from tracefl.dataset import get_clients_server_data, mdedical_dataset2labels, convert_client2_faulty_client
 
 
-from tracefl.differential_testing import run_fed_debug_differential_testing
 from tracefl.models import global_model_eval, initialize_model
 from tracefl.strategy import FedAvgSave
-from tracefl.utils import set_exp_key 
-from tracefl.fl_provenance import given_key_provenance, run_full_cache_provenance
-from tracefl.plotting import do_plotting,convert_cache_to_csv, plot_label_distribution
-from tracefl.differential_testing import run_fed_debug_differential_testing
-
-import multiprocessing
-
-# from collections import Counter
-
-
-
-
-
-
+from tracefl.utils import set_exp_key
+from tracefl.fl_provenance import given_key_provenance
+from tracefl.plotting import do_plotting, convert_cache_to_csv, plot_label_distribution, plot_tracefl_configuration_results, feddebug_comparison_table
 
 
 class FLSimulation:
@@ -195,21 +182,6 @@ class FLSimulation:
         )
         return self.all_rounds_results
 
-    # def run(self):
-    #     """Run the simulation."""
-    #     fl.simulation.start_simulation(
-    #         ray_init_args=self.backend_config["init_args"],
-    #         client_fn=self._get_client,
-    #         num_clients=self.cfg.num_clients,
-    #         config=fl.server.ServerConfig(
-    #             num_rounds=self.cfg.strategy.num_rounds
-    #         ),  # Just three rounds
-    #         strategy=self.strategy,
-    #         client_resources=self.backend_config["client_resources"],
-    #     )
-
-    #     return self.all_rounds_results
-
 
 def run_training_simulation(cfg):
     """Run the simulation."""
@@ -219,7 +191,8 @@ def run_training_simulation(cfg):
             temp_dict = train_cache[cfg.exp_key]
             if "complete" in temp_dict and temp_dict["complete"] and len(temp_dict["all_ronuds_gm_results"]) > 0:
                 # print(f'---------> {temp_dict["all_ronuds_gm_results"]}')
-                logging.info(f"Training already completed: {cfg.exp_key}, len of results: {len(temp_dict['all_ronuds_gm_results'])}")
+                logging.info(
+                    f"Training already completed: {cfg.exp_key}, len of results: {len(temp_dict['all_ronuds_gm_results'])}")
                 return
 
     logging.info(
@@ -231,24 +204,25 @@ def run_training_simulation(cfg):
     train_cfg = copy.deepcopy(cfg)  # important
 
     # ds_dict["client2class"]
-
-    logging.info(f'Client to class mapping: {ds_dict["client2class"]}')
-    plot_label_distribution(ds_dict["client2class"], mdedical_dataset2labels(cfg.dataset.name), fname_type='without_flip')
+    # logging.info(f'Client to class mapping: {ds_dict["client2class"]}')
+    # plot_label_distribution(ds_dict["client2class"], mdedical_dataset2labels(cfg.dataset.name), fname_type='without_flip')
 
     logging.info(f'faulty clients: {cfg.faulty_clients_ids}')
+
     if len(cfg.faulty_clients_ids) > 0:
         cfg.faulty_clients_ids = [f"{x}" for x in cfg.faulty_clients_ids]
-        logging.info(f'Converting clients to faulty clients: {cfg.faulty_clients_ids}')
+        logging.info(
+            f'Converting clients to faulty clients: {cfg.faulty_clients_ids}')
         # _ = input("Press Enter to continue...")
         for faulty_id in cfg.faulty_clients_ids:
-            client_new_ds_dict  = convert_client2_faulty_client(ds_dict["client2data"][faulty_id], cfg.label2flip)
+            client_new_ds_dict = convert_client2_faulty_client(
+                ds_dict["client2data"][faulty_id], cfg.label2flip)
             ds_dict["client2data"][faulty_id], label2count = client_new_ds_dict['ds'], client_new_ds_dict['label2count']
-            temp_client2class = copy.deepcopy(ds_dict["client2class"])   
+            temp_client2class = copy.deepcopy(ds_dict["client2class"])
             temp_client2class[faulty_id] = label2count
         logging.info(f'After Client to class mapping: {temp_client2class}')
-        plot_label_distribution(temp_client2class, mdedical_dataset2labels(cfg.dataset.name), fname_type='flip')
-    
-    # _ = input("Press Enter to continue...")
+        plot_label_distribution(temp_client2class, mdedical_dataset2labels(
+            cfg.dataset.name), fname_type='flip')
 
     sim = FLSimulation(copy.deepcopy(cfg), train_cache)
     sim.set_server_data(ds_dict["server_testdata"])
@@ -276,56 +250,36 @@ def run_training_simulation(cfg):
     logging.info(f"Results of gm evaluations each round: {round2results}")
     logging.info(f"Training Complete for: {cfg.exp_key} ")
 
-    gc.collect()
-    torch.cuda.empty_cache()
-    gc.collect()
-
-
-
-
 
 @hydra.main(config_path="conf", config_name="base", version_base=None)
 def main(cfg) -> None:
     """Run the baseline."""
 
     cfg.exp_key = set_exp_key(cfg)
+
     if cfg.dry_run:
         logging.info(f"DRY RUN: {cfg.exp_key}")
         return
 
     if cfg.do_training:
-        # try:
         run_training_simulation(cfg)
-        # except Exception as e:
-        #     logging.error(f"Error: {e}")
-        #     logging.error(f"Error in training experiment: {cfg.exp_key}")
-        # time.sleep(1)
-
 
     if cfg.do_provenance:
-        # multiprocessing.set_start_method('spawn')
         logging.info("Running Provenance")
         given_key_provenance(cfg)
-        # run_fed_debug_differential_testing(cfg)
 
-        # try:
-        #     given_key_provenance(cfg)
-        # except Exception as e:
-        #     logging.error(f"Error: {e}")
-        #     logging.error(f"Error in provenance experiment: {cfg.exp_key}")
-        
-    
-    # if cfg.do_full_cache_provenance:
-    #     run_full_cache_provenance(cfg)
-
-    if cfg.convert_cache_to_csv:
-        convert_cache_to_csv(Index(cfg.storage.dir + cfg.storage.results_cache_name))
-        logging.info("Converted cache to csv is done")
-    
-    if cfg.plotting:
-        logging.info("Plotting results")
-        do_plotting()
+        if len(cfg.faulty_clients_ids) > 0:
+            feddebug_comparison_table(cfg)
+        else:
+            plot_tracefl_configuration_results(cfg)
 
 
+    # if cfg.convert_cache_to_csv:
+    #     prov_cache =  Index(cfg.storage.dir + cfg.storage.results_cache_name)
+    #     convert_cache_to_csv(prov_cache)
+    #     logging.info("Converted cache to csv is done")
+    # if cfg.plotting:
+    #     logging.info("Plotting results")
+    #     do_plotting()
 if __name__ == "__main__":
     main()

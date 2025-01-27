@@ -1,27 +1,19 @@
-import csv
-import re
-import select
-from tkinter import font
+import hashlib
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 import pandas as pd
 import seaborn as sns
-import scienceplots
-
-from scipy.signal import savgol_filter
 from pathvalidate import sanitize_filename
 from scipy.ndimage import gaussian_filter1d
-
-import numpy as np
-
 import copy
 import logging
-
+from diskcache import Index
+from pathlib import Path
 
 # global abc
 abc = 0
 full_abc = ['a', 'b', 'c', 'd', 'e', 'f',
             'g', 'h', 'i', 'j', 'k', 'l', 'm']
+
 
 def _fix_legend(all_axes, fig, bbox_to_anchor=(0.5, 0.3)):
     all_axes = all_axes.flatten()
@@ -64,12 +56,12 @@ def _get_paper_name(name):
 
     return d[name]
 
+
 def smooting_filter(column_values):
     # return savgol_filter(column_values, window_length=6, polyorder=1)
     # return moving_average(column_values, window_size=4)
     return gaussian_filter1d(column_values, sigma=2)
 
-import hashlib
 
 def get_hashed_name(name, algorithm='md5'):
     """
@@ -87,11 +79,13 @@ def get_hashed_name(name, algorithm='md5'):
     elif algorithm == 'sha256':
         hash_object = hashlib.sha256(name.encode())
     else:
-        raise ValueError("Unsupported algorithm. Use 'md5', 'sha1', or 'sha256'.")
-    
+        raise ValueError(
+            "Unsupported algorithm. Use 'md5', 'sha1', or 'sha256'.")
+
     # Generate the hash
     hashed_name = hash_object.hexdigest()
     return hashed_name
+
 
 def convert_cache_to_csv(cache):
     keys = cache.keys()
@@ -133,8 +127,6 @@ def convert_cache_to_csv(cache):
             csv_path = f"results_csvs/{hashed_name}.csv"
             logging.warn(f"hashed name: {csv_path}")
 
-
-
         csv_paths.append(csv_path)
         df.to_csv(csv_path)
 
@@ -147,11 +139,14 @@ def line_plot(axis, x, y, label, linestyle, linewidth=2):
     axis.plot(x, y, label=label, linestyle=linestyle, linewidth=linewidth)
 
 
-#     plt.tight_layout(pad=0.1, w_pad=0.1, h_pad=.1)
-#     _save_plot(fig, "text_image_audio_classification_results")
+
 
 def _save_plot(fig, filename_base):
     for ext in ['png', 'svg', 'pdf']:
+        directory_path = Path(f"graphs/{ext}s")
+        if not directory_path.exists():
+            directory_path.mkdir(parents=True, exist_ok=True)
+            print(f"Directory '{directory_path}' created.")
         plt.savefig(f"graphs/{ext}s/{filename_base}.{ext}",
                     bbox_inches='tight', format=ext, dpi=600)
 
@@ -164,7 +159,7 @@ def _call_before_everyPlot(width_inches=3.3374, height_inches=3.3374/1.618, nrow
     #     context="paper", style="ticks", palette="colorblind", font_scale=1, font="serif"
     # )
 
-    plt.style.use(['science', 'ieee', 'grid', 'no-latex'])
+    # plt.style.use(['science', 'ieee', 'grid', 'no-latex'])
     fig, axes = None, None
     if nrows != -1 and ncols != -1:
         fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(
@@ -190,13 +185,11 @@ def _plot_label_distribution_motivation():
     # plt.tight_layout()
     # _save_plot(fig, f"label_distribution_proper_labels_without_flip_pathmnist")
 
-    
-
     def plot_partition_labels_distribution():
         # Dataset provided by the user
         data = {
-            'Labels': ['Adipose', 'Background', 'Debris', 'Lymphocytes', 'Mucus', 'Smooth Muscle', 
-                    'Normal Colon Mucosa', 'Cancer-associated Stroma', 'Colorectal Adenocarcinoma'],
+            'Labels': ['Adipose', 'Background', 'Debris', 'Lymphocytes', 'Mucus', 'Smooth Muscle',
+                       'Normal Colon Mucosa', 'Cancer-associated Stroma', 'Colorectal Adenocarcinoma'],
             'H0': [670, 667, 711, 0, 0, 0, 0, 0, 0],
             'H1': [0, 568, 623, 857, 0, 0, 0, 0, 0],
             'H2': [0, 0, 602, 807, 639, 0, 0, 0, 0],
@@ -213,12 +206,15 @@ def _plot_label_distribution_motivation():
         df = pd.DataFrame(data)
 
         # Transform the DataFrame for easier plotting
-        df_melted = df.melt(id_vars='Labels', var_name='Partition ID', value_name='Count')
+        df_melted = df.melt(
+            id_vars='Labels', var_name='Partition ID', value_name='Count')
 
-        fig, axes =  _call_before_everyPlot(width_inches=3.3374*4.6, height_inches=(3.3374*2)/1.618, nrows=1, ncols=1)
-         
+        fig, axes = _call_before_everyPlot(
+            width_inches=3.3374*4.6, height_inches=(3.3374*2)/1.618, nrows=1, ncols=1)
+
         # Summing counts for stacked bars
-        df_melted_pivot = df_melted.pivot_table(index='Partition ID', columns='Labels', values='Count', aggfunc='sum', fill_value=0)
+        df_melted_pivot = df_melted.pivot_table(
+            index='Partition ID', columns='Labels', values='Count', aggfunc='sum', fill_value=0)
 
         # Stacked bar plot
         df_melted_pivot.plot(kind='bar', stacked=True)
@@ -227,22 +223,24 @@ def _plot_label_distribution_motivation():
         plt.xlabel('Hospital ID')
         plt.ylabel('Number of Data Points')
         # plt.legend(title='Labels', bbox_to_anchor=(1.05, 1), loc='upper left')
-        plt.legend(title='Labels', bbox_to_anchor=(0.5, 1.15), loc='center', ncol=3, frameon=False)
-    
+        plt.legend(title='Labels', bbox_to_anchor=(0.5, 1.15),
+                   loc='center', ncol=3, frameon=False)
+
         plt.tight_layout()
-        _save_plot(fig, f"label_distribution_proper_labels_without_flip_pathmnist")
+        _save_plot(
+            fig, f"label_distribution_proper_labels_without_flip_pathmnist")
         # plt.show()
 
     # To use the function, simply call it
     plot_partition_labels_distribution()
 
 
-
-
 def _plot_text_image_audio_classification_results():
     # from scipy.interpolate import UnivariateSplin
+    # prov_image_classification_exp-resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients100-fedavg-(R10-clientsPerR10)-non_iid_dirichlet0.1-batch32-epochs2-lr0.001
+    # results_csvs/prov_image_classification_exp-resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients100-fedavg-(R10-clientsPerR10)-non_iid_dirichlet0.1-batch32-epochs2-lr0.001.csv
     def _getdf(mname, dname, alpha, trounds):
-        fname = f'results_csvs/prov_For-Main-Training--{mname}-{dname}-faulty_clients[[]]-noise_rateNone-TClients100-fedavg-(R{trounds}-clientsPerR10)-non_iid_dirichlet{alpha}-batch32-epochs2-lr0.001.csv'
+        fname = f'results_csvs/prov_image_classification_exp-{mname}-{dname}-faulty_clients[[]]-noise_rateNone-TClients100-fedavg-(R{trounds}-clientsPerR10)-non_iid_dirichlet{alpha}-batch32-epochs2-lr0.001.csv'
         return pd.read_csv(fname)
 
     def _plot(ax, mname, dname, alpha, trounds):
@@ -294,7 +292,7 @@ def _plot_text_image_audio_classification_results():
     all_config_summary = []
 
     text_models = ['openai-communityopenai-gpt',
-                    'google-bertbert-base-cased']
+                   'google-bertbert-base-cased']
     text_datasets = ['dbpedia_14', 'yahoo_answers_topics']
 
     image_models = ['resnet18', 'densenet121']
@@ -308,7 +306,6 @@ def _plot_text_image_audio_classification_results():
     _plot_model_dataset_config(
         all_axes[2], image_models, standd_datasets, 50)
 
-    
     _fix_legend(all_axes, fig, bbox_to_anchor=(0.5, 0.04))
 
     fig.supxlabel('Communication Rounds', fontsize=12)
@@ -319,10 +316,10 @@ def _plot_text_image_audio_classification_results():
     average_accuracy = total_accuracy / total_rounds
     fig.subplots_adjust(hspace=0.0, wspace=0.0)
     plt.tight_layout()
-    fname = f"text_image_audio_classification_results_{alpha}_alpha" 
+    fname = f"text_image_audio_classification_results_{alpha}_alpha"
     _save_plot(fig, fname)
-    
-    logging.info(f"-------------- {fname} --------------")  
+
+    logging.info(f"-------------- {fname} --------------")
     logging.info(f"Total Rounds: {total_rounds}")
     logging.info(f"Total Accuracy: {total_accuracy}")
     logging.info(f"Average Accuracy: {average_accuracy}")
@@ -330,8 +327,6 @@ def _plot_text_image_audio_classification_results():
 
     # return the above metrics in a dict
     return {'Total Rounds': total_rounds, 'Total Accuracy': total_accuracy, 'Average Accuracy': average_accuracy, 'Total Models Trained': total_rounds * 10}
-
-
 
 
 def _table_and_graph_scalability_results():
@@ -377,7 +372,7 @@ def _table_and_graph_scalability_results():
     per_round_clients = [20, 30, 40, 50]
 
     scaling_total_clients_dicts = []
-    total_rounds_cleints200_1000 = 0 
+    total_rounds_cleints200_1000 = 0
     total_accuracy_clients200_1000 = 0
     for num_clients in scaling_clients:
         df = _get_df_scaling_clients(num_clients)
@@ -396,13 +391,14 @@ def _table_and_graph_scalability_results():
     logging.info(f"-------------- Total Clients 200-1000 --------------")
     logging.info(f"Total Rounds: {total_rounds_cleints200_1000}")
     logging.info(f"Total Accuracy: {total_accuracy_clients200_1000}")
-    logging.info(f"Average Accuracy: {total_accuracy_clients200_1000/total_rounds_cleints200_1000}")
-    logging.info(f'Total Models Trained:  {total_model_trained_clients200_1000}')
-
+    logging.info(
+        f"Average Accuracy: {total_accuracy_clients200_1000/total_rounds_cleints200_1000}")
+    logging.info(
+        f'Total Models Trained:  {total_model_trained_clients200_1000}')
 
     df_toal_clients = pd.DataFrame(scaling_total_clients_dicts)
-    
-    logging.info(df_toal_clients) 
+
+    logging.info(df_toal_clients)
     # Convert DataFrame to LaTeX with float values formatted to 2 decimal points
     latex_code_toal_clients = df_toal_clients.to_latex(
         index=False, float_format="%.2f")
@@ -427,16 +423,18 @@ def _table_and_graph_scalability_results():
         clients_per_round_dicts.append(temp_dict)
         total_rounds_per_round_client20_50 += len(df)
         total_accuracy_per_round_client20_50 += (df['Accuracy'].sum()*100)
-        total_model_trained_per_round_client20_50 += len(df) * clients_per_round
-
+        total_model_trained_per_round_client20_50 += len(
+            df) * clients_per_round
 
     # log the above metrics
-    logging.info(f"-------------- Scalability Clients Per Round 20-50 --------------")
+    logging.info(
+        f"-------------- Scalability Clients Per Round 20-50 --------------")
     logging.info(f"Total Rounds: {total_rounds_per_round_client20_50}")
     logging.info(f"Total Accuracy: {total_accuracy_per_round_client20_50}")
-    logging.info(f"Average Accuracy: {total_accuracy_per_round_client20_50/total_rounds_per_round_client20_50}")
-    logging.info(f'Total Models Trained:  {total_model_trained_per_round_client20_50}')
-
+    logging.info(
+        f"Average Accuracy: {total_accuracy_per_round_client20_50/total_rounds_per_round_client20_50}")
+    logging.info(
+        f'Total Models Trained:  {total_model_trained_per_round_client20_50}')
 
     df_clients_per_round = pd.DataFrame(clients_per_round_dicts)
     logging.info(df_clients_per_round)
@@ -454,8 +452,9 @@ def _table_and_graph_scalability_results():
         width_inches=width, height_inches=height, nrows=1, ncols=1, sharey=True)
 
     # Plot for varying number of rounds
-    logging.info(f"-------------- Scalability Number of Rounds 80 --------------")
-    
+    logging.info(
+        f"-------------- Scalability Number of Rounds 80 --------------")
+
     total_rounds_num_rounds_80 = 80
     total_model_trained_rounds_80 = 80 * 10
     num_rounds_exp = 80
@@ -464,9 +463,9 @@ def _table_and_graph_scalability_results():
     total_accuracy_num_rounds_80 = (df['Accuracy'][:num_rounds_exp].sum())
     logging.info(f"Total Rounds: {num_rounds_exp}")
     logging.info(f"Total Accuracy: {total_accuracy_num_rounds_80}")
-    logging.info(f"Average Accuracy: {total_accuracy_num_rounds_80/num_rounds_exp}")
+    logging.info(
+        f"Average Accuracy: {total_accuracy_num_rounds_80/num_rounds_exp}")
     logging.info(f'Total Models Trained:  {total_model_trained_rounds_80}')
-
 
     # Add the legend below the subplots
     all_axes.legend(loc='lower center',
@@ -477,15 +476,15 @@ def _table_and_graph_scalability_results():
     _save_plot(fig, f"scalability_results_400_clients_rounds_{num_rounds_exp}")
 
     # return the above metrics in a dict and first sum them all
-    total_rounds = total_rounds_cleints200_1000 + total_rounds_per_round_client20_50 + num_rounds_exp
-    total_accuracy = total_accuracy_clients200_1000 + total_accuracy_per_round_client20_50 + total_accuracy_num_rounds_80
+    total_rounds = total_rounds_cleints200_1000 + \
+        total_rounds_per_round_client20_50 + num_rounds_exp
+    total_accuracy = total_accuracy_clients200_1000 + \
+        total_accuracy_per_round_client20_50 + total_accuracy_num_rounds_80
     average_accuracy = total_accuracy / total_rounds
-    total_model_trained = total_model_trained_clients200_1000 + total_model_trained_per_round_client20_50 + total_model_trained_rounds_80
+    total_model_trained = total_model_trained_clients200_1000 + \
+        total_model_trained_per_round_client20_50 + total_model_trained_rounds_80
 
     return {'Total Rounds': total_rounds, 'Total Accuracy': total_accuracy, 'Average Accuracy': average_accuracy, 'Total Models Trained': total_model_trained}
-     
-
-
 
 
 def _plot_differential_privacy_results():
@@ -519,7 +518,7 @@ def _plot_differential_privacy_results():
     fig, all_axes = _call_before_everyPlot(
         width_inches=3.3374*1.3, height_inches=3.3374/1.718, nrows=1, ncols=1, sharey=True)
 
-    temp_dict1 =  _plot(all_axes, 50, alpha_for_dp_exp)
+    temp_dict1 = _plot(all_axes, 50, alpha_for_dp_exp)
     # _plot(all_axes[1], dp_clip[1], alpha_for_dp_exp)
 
     fig.supylabel('Accuracy (%)')
@@ -548,38 +547,45 @@ def _plot_differential_privacy_results():
     plt.tight_layout()
     _save_plot(fig, f"differential_privacy_results_alpha_{alpha_for_dp_exp}")
 
-    # table plotting 
+    # table plotting
     dp_noises = [0.003]
-    temp_dict2 =  _get_avg_prov_and_max_acc_differential_privacy(dclip=15, alpha=0.3)
-    dict_for_df2 = {'DP Noise':0.003, 'DP Clip':15, 'FL Training Accuracy': temp_dict2['gm'], 'TraceFL Avg. Accuracy': temp_dict2['prov']}
+    temp_dict2 = _get_avg_prov_and_max_acc_differential_privacy(
+        dclip=15, alpha=0.3)
+    dict_for_df2 = {'DP Noise': 0.003, 'DP Clip': 15,
+                    'FL Training Accuracy': temp_dict2['gm'], 'TraceFL Avg. Accuracy': temp_dict2['prov']}
 
     dp_noises = [0.006]
-    temp_dict3 =  _get_avg_prov_and_max_acc_differential_privacy(dclip=10, alpha=0.3)
-    dict_for_df3 = {'DP Noise':0.006, 'DP Clip':10, 'FL Training Accuracy': temp_dict3['gm'], 'TraceFL Avg. Accuracy': temp_dict3['prov']}
+    temp_dict3 = _get_avg_prov_and_max_acc_differential_privacy(
+        dclip=10, alpha=0.3)
+    dict_for_df3 = {'DP Noise': 0.006, 'DP Clip': 10,
+                    'FL Training Accuracy': temp_dict3['gm'], 'TraceFL Avg. Accuracy': temp_dict3['prov']}
 
     dp_noises = [0.012]
-    temp_dict4 =  _get_avg_prov_and_max_acc_differential_privacy(dclip=15, alpha=0.3)
-    dict_for_df4 = {'DP Noise':0.012, 'DP Clip':15, 'FL Training Accuracy': temp_dict4['gm'], 'TraceFL Avg. Accuracy': temp_dict4['prov']}
-
+    temp_dict4 = _get_avg_prov_and_max_acc_differential_privacy(
+        dclip=15, alpha=0.3)
+    dict_for_df4 = {'DP Noise': 0.012, 'DP Clip': 15,
+                    'FL Training Accuracy': temp_dict4['gm'], 'TraceFL Avg. Accuracy': temp_dict4['prov']}
 
     df = pd.DataFrame([dict_for_df2, dict_for_df3, dict_for_df4])
 
     logging.info(f'------- DP Results Table -------')
     logging.info(df)
 
-    
     # Convert DataFrame to LaTeX with float values formatted to 2 decimal points
     latex_code = df.to_latex(index=False)
     with open("graphs/tables/differential_privacy_results_table.tex", "w") as f:
         f.write(latex_code)
 
     # merge the two dicts
-    total_rounds = temp_dict1['Total Rounds'] + temp_dict2['Total Rounds'] + temp_dict3['Total Rounds'] + temp_dict4['Total Rounds']
-    total_accuracy = temp_dict1['Total Accuracy'] + temp_dict2['Total Accuracy'] + temp_dict3['Total Accuracy'] + temp_dict4['Total Accuracy']
+    total_rounds = temp_dict1['Total Rounds'] + temp_dict2['Total Rounds'] + \
+        temp_dict3['Total Rounds'] + temp_dict4['Total Rounds']
+    total_accuracy = temp_dict1['Total Accuracy'] + temp_dict2['Total Accuracy'] + \
+        temp_dict3['Total Accuracy'] + temp_dict4['Total Accuracy']
     average_accuracy = total_accuracy / total_rounds
     total_model_trained = total_rounds * 10
 
-    logging.info(f"-------------- differential_privacy_results_alpha_{alpha_for_dp_exp} --------------")
+    logging.info(
+        f"-------------- differential_privacy_results_alpha_{alpha_for_dp_exp} --------------")
     logging.info(f"Total Rounds: {total_rounds}")
     logging.info(f"Total Accuracy: {total_accuracy}")
     logging.info(f"Average Accuracy: {average_accuracy}")
@@ -587,17 +593,13 @@ def _plot_differential_privacy_results():
 
     return {'Total Rounds': total_rounds, 'Total Accuracy': total_accuracy, 'Average Accuracy': average_accuracy, 'Total Models Trained': total_model_trained}
 
-   
-
-
 
 def _plot_dirchlet_alpha_vs_accuracy():
-    
+
     def _getdf(mname, dname, alpha):
         fname = f'results_csvs/prov_Dirichlet-Alpha-{mname}-{dname}-faulty_clients[[]]-noise_rateNone-TClients100-fedavg-(R15-clientsPerR10)-non_iid_dirichlet{alpha}-batch32-epochs2-lr0.001.csv'
         return pd.read_csv(fname)
 
-    
     def _get_avg_prov_and_max_acc(mname, dname):
         all_dfs = [_getdf(mname, dname, a) for a in all_alphas]
         average_prov_on_each_alpha = [
@@ -618,15 +620,13 @@ def _plot_dirchlet_alpha_vs_accuracy():
         logging.info(f"Dirchelet Title: {title}")
         logging.info(f'alpha {all_alphas[0:5]}, gm {temp_dict["gm"][0:5]}')
 
-
-
         ax.set_title(title)
         ax.legend()
         # set y limit
         # ax.set_ylim([0, 105])
         abc += 1
         return temp_dict
-    
+
     global abc
     abc = 0
 
@@ -638,18 +638,21 @@ def _plot_dirchlet_alpha_vs_accuracy():
     fig, axes = _call_before_everyPlot(
         width_inches=width, height_inches=height, nrows=3, ncols=2, sharey=True)
 
-    temp_dict1 =  _plot(axes[0][0], 'densenet121', 'pathmnist')
-    temp_dict2 =  _plot(axes[0][1], 'densenet121', 'organamnist')
-    temp_dict3 =  _plot(axes[1][0], 'densenet121', 'mnist')
-    temp_dict4 =  _plot(axes[1][1], 'densenet121', 'cifar10')
-    temp_dict5 =  _plot(axes[2][0], 'openai-communityopenai-gpt', 'yahoo_answers_topics')
-    temp_dict6 =  _plot(axes[2][1], 'openai-communityopenai-gpt', 'dbpedia_14')
-    
+    temp_dict1 = _plot(axes[0][0], 'densenet121', 'pathmnist')
+    temp_dict2 = _plot(axes[0][1], 'densenet121', 'organamnist')
+    temp_dict3 = _plot(axes[1][0], 'densenet121', 'mnist')
+    temp_dict4 = _plot(axes[1][1], 'densenet121', 'cifar10')
+    temp_dict5 = _plot(
+        axes[2][0], 'openai-communityopenai-gpt', 'yahoo_answers_topics')
+    temp_dict6 = _plot(axes[2][1], 'openai-communityopenai-gpt', 'dbpedia_14')
 
-
-    total_rounds = temp_dict1['Total Rounds'] + temp_dict2['Total Rounds'] + temp_dict3['Total Rounds'] + temp_dict4['Total Rounds'] + temp_dict5['Total Rounds'] + temp_dict6['Total Rounds']
-    total_model_trained = total_rounds * 10 
-    total_accuracy = temp_dict1['Total Accuracy'] + temp_dict2['Total Accuracy'] + temp_dict3['Total Accuracy'] + temp_dict4['Total Accuracy'] + temp_dict5['Total Accuracy'] + temp_dict6['Total Accuracy']
+    total_rounds = temp_dict1['Total Rounds'] + temp_dict2['Total Rounds'] + temp_dict3['Total Rounds'] + \
+        temp_dict4['Total Rounds'] + \
+        temp_dict5['Total Rounds'] + temp_dict6['Total Rounds']
+    total_model_trained = total_rounds * 10
+    total_accuracy = temp_dict1['Total Accuracy'] + temp_dict2['Total Accuracy'] + temp_dict3['Total Accuracy'] + \
+        temp_dict4['Total Accuracy'] + \
+        temp_dict5['Total Accuracy'] + temp_dict6['Total Accuracy']
 
     fig.supxlabel('Dirichlet Alpha', fontsize=12)
     fig.supylabel('Accuracy (%)', fontsize=12)
@@ -658,7 +661,8 @@ def _plot_dirchlet_alpha_vs_accuracy():
     plt.tight_layout()
     _save_plot(fig, "dirchlet_alpha_vs_accuracy_medical_text")
 
-    logging.info(f"-------------- dirchlet_alpha_vs_accuracy_medical_text --------------")
+    logging.info(
+        f"-------------- dirchlet_alpha_vs_accuracy_medical_text --------------")
     logging.info(f"Total Rounds: {total_rounds}")
     logging.info(f"Total Accuracy: {total_accuracy}")
     logging.info(f"Average Accuracy: {total_accuracy/total_rounds}")
@@ -764,65 +768,56 @@ def _plot_motivation_example_tracefl_output():
 
 
 def _plot_table_fed_debug_comparison() -> None:
-    def _read_df(start_key, mname, dname, faulty_cleint_id, label2flip, data_dist,alpha=None):
+    def _read_df(start_key, mname, dname, faulty_cleint_id, label2flip, data_dist, alpha=None):
         fname = f'results_csvs/prov_{start_key}-{mname}-{dname}-faulty_clients[[{faulty_cleint_id}]]-noise_rate{label2flip}-TClients10-fedavg-(R15-clientsPerR10)-{data_dist}{alpha}-batch32-epochs2-lr0.001.csv'
         if len(fname) > 250:
             hashe_name = get_hashed_name(fname)
             fname = f"results_csvs/{hashe_name}.csv"
-        
+
         return pd.read_csv(fname)
 
-    # def _get_table_dict_pathological(df):
-    #     mname = _get_paper_name(df['Model'][0])
-    #     dname = _get_paper_name(df['Dataset'][0])
-    #     return {'Data Distribution': 'Pathological', 'Model': mname, 'Dataset': dname, 'Avg. FedDebug Time (s)': df['FedDebug avg_fault_localization_time'].mean(), 'Avg. TraceFL Time (s)': df['avg_prov_time_per_input'].mean(), 'FedDebug Accuracy': df['FedDebug Accuracy'].mean(),  'TraceFL Accuracy': df['Accuracy'].mean()*100}
-    
-    # def _get_table_dict_pathological_text(df):
-    #     mname = _get_paper_name(df['Model'][0])
-    #     dname = _get_paper_name(df['Dataset'][0])
-    #     return {'Data Distribution': 'Pathological', 'Model': mname, 'Dataset': dname, 'Avg. FedDebug Time (s)': 'NA', 'Avg. TraceFL Time (s)': df['avg_prov_time_per_input'].mean(), 'FedDebug Accuracy': "NA",  'TraceFL Accuracy': df['Accuracy'].mean()*100}
-    
     def _get_table_dict_dirichlet(df, alpha):
         mname = _get_paper_name(df['Model'][0])
         dname = _get_paper_name(df['Dataset'][0])
-        
+
         if mname.find('GPT') != -1:
             return {'Model': mname, 'Dataset': dname, 'Dirichlet Distribution ($\\alpha$)': alpha,   'Avg. FedDebug Time (s)': "NA", 'Avg. TraceFL Time (s)': df['avg_prov_time_per_input'].mean(), 'FedDebug Accuracy': "NA",  'TraceFL Accuracy': df['Accuracy'].mean()*100}
 
         else:
             return {'Model': mname, 'Dataset': dname, 'Dirichlet Distribution ($\\alpha$)': alpha,   'Avg. FedDebug Time (s)': df['FedDebug avg_fault_localization_time'].mean(), 'Avg. TraceFL Time (s)': df['avg_prov_time_per_input'].mean(), 'FedDebug Accuracy': df['FedDebug Accuracy'].mean(),  'TraceFL Accuracy': df['Accuracy'].mean()*100}
 
-
-
     l2flip = '{1 0, 2 0, 3 0, 4 0, 5 0, 6 0, 7 0, 8 0, 9 0, 10 0, 11 0, 12 0, 13 0}'
     alphas = [0.3, 0.7, 1]
-    dnames = ['organamnist', 'pathmnist', 'cifar10', 'mnist']    
+    dnames = ['organamnist', 'pathmnist', 'cifar10', 'mnist']
 
     dirchilet_dfs = []
     summarised_dirchilet_dfs = []
     for dname in dnames:
         for alpha in alphas:
-            df_temp = _read_df(start_key='faulty_dirichlet', mname='densenet121', dname=dname, faulty_cleint_id=0, label2flip=l2flip, data_dist='non_iid_dirichlet', alpha=alpha)
+            df_temp = _read_df(start_key='faulty_dirichlet', mname='densenet121', dname=dname,
+                               faulty_cleint_id=0, label2flip=l2flip, data_dist='non_iid_dirichlet', alpha=alpha)
             dirchilet_dfs.append(df_temp)
-            summarised_dirchilet_dfs.append(_get_table_dict_dirichlet(df_temp, alpha))
-
+            summarised_dirchilet_dfs.append(
+                _get_table_dict_dirichlet(df_temp, alpha))
 
     for dname in ['dbpedia_14', 'yahoo_answers_topics']:
         for alpha in alphas:
-            df_temp = _read_df(start_key='faulty_dirichlet', mname='openai-communityopenai-gpt', dname=dname, faulty_cleint_id=0, label2flip=l2flip, data_dist='non_iid_dirichlet', alpha=alpha)
+            df_temp = _read_df(start_key='faulty_dirichlet', mname='openai-communityopenai-gpt', dname=dname,
+                               faulty_cleint_id=0, label2flip=l2flip, data_dist='non_iid_dirichlet', alpha=alpha)
             dirchilet_dfs.append(df_temp)
-            summarised_dirchilet_dfs.append(_get_table_dict_dirichlet(df_temp, alpha))
+            summarised_dirchilet_dfs.append(
+                _get_table_dict_dirichlet(df_temp, alpha))
 
-
-        
-    all_dicts = summarised_dirchilet_dfs # [_get_table_dict_pathological(df) for df in pathological_dfs] + summarised_dirchilet_dfs + [_get_table_dict_pathological_text(df5), _get_table_dict_pathological_text(df6)]
+    # [_get_table_dict_pathological(df) for df in pathological_dfs] + summarised_dirchilet_dfs + [_get_table_dict_pathological_text(df5), _get_table_dict_pathological_text(df6)]
+    all_dicts = summarised_dirchilet_dfs
 
     df = pd.DataFrame(all_dicts)
     print(df)
 
     df.to_csv('results_csvs/feddebug_vs_tracefl_time_comparison.csv')
 
-    selected_columns = ['Model',  'Dataset', 'Dirichlet Distribution ($\\alpha$)', 'FedDebug Accuracy', 'TraceFL Accuracy']
+    selected_columns = ['Model',  'Dataset',
+                        'Dirichlet Distribution ($\\alpha$)', 'FedDebug Accuracy', 'TraceFL Accuracy']
 
     df_latex = df[selected_columns]
 
@@ -830,9 +825,10 @@ def _plot_table_fed_debug_comparison() -> None:
     with open("graphs/tables/feddebug_vs_tracefl_comparison.tex", "w") as f:
         f.write(latex_code)
 
-    all_dfs =  dirchilet_dfs  #pathological_dfs + dirchilet_dfs + [df5, df6]
+    all_dfs = dirchilet_dfs  # pathological_dfs + dirchilet_dfs + [df5, df6]
 
-    logging.info(f"-------------- FedDebug vs TraceFL Comparison --------------")
+    logging.info(
+        f"-------------- FedDebug vs TraceFL Comparison --------------")
 
     total_acc = sum([df['Accuracy'].sum()*100 for df in all_dfs])
     total_rounds = sum([len(df) for df in all_dfs])
@@ -843,26 +839,15 @@ def _plot_table_fed_debug_comparison() -> None:
     logging.info(f"Average Accuracy: {average_accuracy}")
     logging.info(f'Total Models Trained:  {total_models_trained}')
 
-
-    return {'Total Rounds': total_rounds, 'Total Accuracy': total_acc, 'Average Accuracy': average_accuracy, 'Total Models Trained': total_models_trained}     
+    return {'Total Rounds': total_rounds, 'Total Accuracy': total_acc, 'Average Accuracy': average_accuracy, 'Total Models Trained': total_models_trained}
 
 
 def _plot_overhead():
 
-
-    # Create the DataFrame
-    # data = {
-    #     "Model-Dataset": [
-    #         "Abdominal-CT", "Colon-Pathology",  "DBpedia", "Yahoo-Answers"
-    #     ],
-    #     "Avg. FedDebug Time (s)": [1.065782728, 1.032155128,  0, 0],
-    #     "Avg. TraceFL Time (s)": [3.863399574, 3.904629768,  2.699528438, 2.634212631]
-    # }
-
     # Create the DataFrame
     data = {
         "Model-Dataset": [
-            "Abdominal-CT", "Colon-Pathology", "CIFAR10", 
+            "Abdominal-CT", "Colon-Pathology", "CIFAR10",
             "MNIST", "DBpedia", "Yahoo-Answers"
         ],
         "Avg. FedDebug Time (s)": [1.065782728, 1.032155128, 1.099321423, 1.136827763, 0, 0],
@@ -873,11 +858,11 @@ def _plot_overhead():
 
     # Plotting the bar plot
     # plt.figure(figsize=(10, 6))
-    fig, ax =  _call_before_everyPlot(width_inches=3.3374*1.12, height_inches=3.3374/1.4, nrows=1, ncols=1)
+    fig, ax = _call_before_everyPlot(
+        width_inches=3.3374*1.12, height_inches=3.3374/1.4, nrows=1, ncols=1)
 
-    
     sns.barplot(y="value", x="Model-Dataset", hue="variable",
-            data=pd.melt(df, id_vars=["Model-Dataset"]), palette="viridis")
+                data=pd.melt(df, id_vars=["Model-Dataset"]), palette="viridis")
 
     # plt.yticks(rotation=0)
     # plt.title("Comparison of Avg. FedDebug Time and Avg. TraceFL Time across Model-Datasets")
@@ -901,33 +886,30 @@ def _plot_overhead():
     _save_plot(fig, "overhead_comparison")
 
 
-
-
-
 def do_plotting():
-     
 
     # todo
-    logging.info('======================== Section Correct Predictions ========================')
-    r1 =  _plot_text_image_audio_classification_results()
+    logging.info(
+        '======================== Section Correct Predictions ========================')
+    r1 = _plot_text_image_audio_classification_results()
     r2 = _table_and_graph_scalability_results()
-    # sum r1 and r2 metrics 
+    # sum r1 and r2 metrics
     total_rounds_sec1 = r1['Total Rounds'] + r2['Total Rounds']
     total_accuracy_sec1 = r1['Total Accuracy'] + r2['Total Accuracy']
     average_accuracy = total_accuracy_sec1 / total_rounds_sec1
-    total_model_trained_sec1 = r1['Total Models Trained'] + r2['Total Models Trained']
-    logging.info(f"-------------- Total in Accross {total_rounds_sec1} in 2 sections --------------")
+    total_model_trained_sec1 = r1['Total Models Trained'] + \
+        r2['Total Models Trained']
+    logging.info(
+        f"-------------- Total in Accross {total_rounds_sec1} in 2 sections --------------")
     logging.info(f"Total Rounds: {total_rounds_sec1}")
     logging.info(f"Total Accuracy: {total_accuracy_sec1}")
     logging.info(f"Average Accuracy: {average_accuracy}")
     logging.info(f'Total Models Trained:  {total_model_trained_sec1}')
-    
 
+    logging.info(
+        '======================== Section Incorrect Predictions and Comparison With FedDebug ========================')
+    r3 = _plot_table_fed_debug_comparison()
 
-
-    logging.info('======================== Section Incorrect Predictions and Comparison With FedDebug ========================')
-    r3 =  _plot_table_fed_debug_comparison()
-    
     # total_rounds_sec2_plus_sect_1 = r3['Total Rounds'] + total_rounds_sec1
     # total_accuracy_sec2_plus_sect_1 = r3['Total Accuracy'] + total_accuracy_sec1
     # average_accuracy_sec2_plus_sect_1 = total_accuracy_sec2_plus_sect_1 / total_rounds_sec2_plus_sect_1
@@ -937,28 +919,33 @@ def do_plotting():
     # logging.info(f"Average Accuracy Sec2+Sec1: {average_accuracy_sec2_plus_sect_1}")
     # logging.info(f'Total Models Trained Sec2+Sec1:  {total_model_trained_sec2_plus_sect_1}')
 
-   
+    logging.info(
+        '======================== Section Dirichlet Alpha vs Accuracy ========================')
+    r4 = _plot_dirchlet_alpha_vs_accuracy()
 
-
-    logging.info('======================== Section Dirichlet Alpha vs Accuracy ========================')    
-    r4 =  _plot_dirchlet_alpha_vs_accuracy()
-
-    logging.info('======================== Section Differential Privacy ========================')
-    r5 =  _plot_differential_privacy_results() # convert to table
+    logging.info(
+        '======================== Section Differential Privacy ========================')
+    r5 = _plot_differential_privacy_results()  # convert to table
 
     # sum all the metrics
-    total_rounds = total_rounds_sec1 + r3['Total Rounds'] + r4['Total Rounds'] + r5['Total Rounds']
-    total_accuracy = total_accuracy_sec1 + r3['Total Accuracy'] + r4['Total Accuracy'] + r5['Total Accuracy']
+    total_rounds = total_rounds_sec1 + \
+        r3['Total Rounds'] + r4['Total Rounds'] + r5['Total Rounds']
+    total_accuracy = total_accuracy_sec1 + \
+        r3['Total Accuracy'] + r4['Total Accuracy'] + r5['Total Accuracy']
     average_accuracy = total_accuracy / total_rounds
-    total_model_trained = total_model_trained_sec1 + r3['Total Models Trained'] + r4['Total Models Trained'] + r5['Total Models Trained']
-    logging.info(f"******************************************************************************")
-    logging.info(f"-------------- Total in Accross all sections --------------")
+    total_model_trained = total_model_trained_sec1 + \
+        r3['Total Models Trained'] + \
+        r4['Total Models Trained'] + r5['Total Models Trained']
+    logging.info(
+        f"******************************************************************************")
+    logging.info(
+        f"-------------- Total in Accross all sections --------------")
     logging.info(f"Total Rounds: {total_rounds}")
     logging.info(f"Total Accuracy: {total_accuracy}")
     logging.info(f"Average Accuracy: {average_accuracy}")
     logging.info(f'Total Models Trained:  {total_model_trained}')
-    logging.info(f"******************************************************************************")
-
+    logging.info(
+        f"******************************************************************************")
 
     # extra plots
     _plot_label_distribution_motivation()
@@ -966,18 +953,125 @@ def do_plotting():
     _plot_overhead()
 
 
+# ======== Artifact Graphs ============
+
+
+def get_experiment_results_as_dataframe(cfg):
+    key = cfg.exp_key
+    cache = Index(cfg.storage.dir + cfg.storage.results_cache_name)
+    round2prov_result = cache[key]["round2prov_result"]
+    prov_cfg = cache[key]["prov_cfg"]
+    avg_prov_time_per_round = cache[key]["avg_prov_time_per_round"]
+
+    each_round_prov_result = []
+
+    for r2prov in round2prov_result:
+        r2prov['training_cache_path'] = cache[key]["training_cache_path"]
+        r2prov['avg_prov_time_per_round'] = avg_prov_time_per_round
+        r2prov['prov_cfg'] = prov_cfg
+        r2prov['Model'] = prov_cfg.model.name
+        r2prov['Dataset'] = prov_cfg.dataset.name
+        r2prov['Num Clients'] = prov_cfg.num_clients
+        r2prov['Dirichlet Alpha'] = prov_cfg.dirichlet_alpha
+
+        if 'Error' in r2prov:
+            continue
+
+        for m, v in r2prov['eval_metrics'].items():
+            r2prov[m] = v
+        # if 'avg_prov_time_per_input' in r2prov:
+        #     r2prov['abc_avg_prov_time_per_input'] = r2prov['avg_prov_time_per_input']
+        #     logging.info(f"avg_prov_time_per_input: {r2prov['avg_prov_time_per_input']}")
+        each_round_prov_result.append(copy.deepcopy(r2prov))
+
+    df = pd.DataFrame(each_round_prov_result)
+    return df
 
 
 
+def feddebug_comparison_table(cfg):    
+    def _get_table_dict_dirichlet(df, alpha):
+        mname = _get_paper_name(df['Model'][0])
+        dname = _get_paper_name(df['Dataset'][0])
+
+        if mname.find('GPT') != -1:
+            return {'Model': mname, 'Dataset': dname, 'Dirichlet Distribution ($\\alpha$)': alpha,   'Avg. FedDebug Time (s)': "NA", 'Avg. TraceFL Time (s)': df['avg_prov_time_per_input'].mean(), 'FedDebug Accuracy': "NA",  'TraceFL Accuracy': df['Accuracy'].mean()*100}
+
+        else:
+            return {'Model': mname, 'Dataset': dname, 'Dirichlet Distribution ($\\alpha$)': alpha,   'Avg. FedDebug Time (s)': df['FedDebug avg_fault_localization_time'].mean(), 'Avg. TraceFL Time (s)': df['avg_prov_time_per_input'].mean(), 'FedDebug Accuracy': df['FedDebug Accuracy'].mean(),  'TraceFL Accuracy': df['Accuracy'].mean()*100}
+
+    comparison_df = get_experiment_results_as_dataframe(cfg)
+    comparison_dict  =  _get_table_dict_dirichlet(comparison_df, alpha=cfg.dirichlet_alpha)
+
+    df = pd.DataFrame([comparison_dict]) 
+    print(df)
+    
+
+    
 
 
 
+def plot_tracefl_configuration_results(cfg):
+    def _plot(ax):
+        df = get_experiment_results_as_dataframe(cfg)
+        model = _get_paper_name(df['Model'][0])
+        dataset = _get_paper_name(df['Dataset'][0])
 
+        # # Apply Savitzky-Golay filter
+        df['Accuracy'] = df['Accuracy'] * 100
+        df['test_data_acc'] = df['test_data_acc'] * 100
 
+        ax.plot(range(len(df)), smooting_filter(
+            df['Accuracy']), label='TraceFL-Smooth')
+        ax.plot(range(len(df)), smooting_filter(
+            df['test_data_acc']), label='FL Training-Smooth')
+        temp_dict = {'Average Accuracy': df['Accuracy'].mean(
+        ), 'Total Rounds': len(df), 'Total Accuracy': sum(df['Accuracy'])}
 
+        global abc
+        title = (f"{full_abc[abc]}) {dataset}\n{model}")
+        abc += 1
+        ax.text(0.5, 0.5, f"TraceFL \n Avg. Acc {temp_dict['Average Accuracy']:.1f}",
+                horizontalalignment='center',
+                verticalalignment='center',
+                transform=ax.transAxes,
+                fontsize=9)
+        ax.set_title(title)
+        ax.legend()
+        all_config_summary.append(temp_dict)
 
+    # for alpha in [0.1, 0.2, 0.3]:
+    alpha = 0.3
+    global abc
+    abc = 0
+    full_abc = ['a', 'b', 'c', 'd', 'e', 'f',
+                'g', 'h', 'i', 'j', 'k', 'l', 'm']
+    width = 3.3374*1.6
+    height = 3.3374 * 1.5
+    fig, all_axes = _call_before_everyPlot(
+        width_inches=width, height_inches=height, nrows=1, ncols=1, sharey=True)
 
+    all_config_summary = []
 
+    _plot(all_axes)
 
+    # _fix_legend(all_axes, fig, bbox_to_anchor=(0.5, 0.04))
 
+    fig.supxlabel('Communication Rounds', fontsize=12)
+    fig.supylabel('Accuracy (%)', fontsize=12, )
 
+    total_rounds = sum([x['Total Rounds'] for x in all_config_summary])
+    total_accuracy = sum([x['Total Accuracy'] for x in all_config_summary])
+    average_accuracy = total_accuracy / total_rounds
+    fig.subplots_adjust(hspace=0.0, wspace=0.0)
+    plt.tight_layout()
+    fname = f"text_image_audio_classification_results_{alpha}_alpha"
+    _save_plot(fig, fname)
+    logging.info(f"-------------- {fname} --------------")
+    logging.info(f"Total Rounds: {total_rounds}")
+    logging.info(f"Total Accuracy: {total_accuracy}")
+    logging.info(f"Average Accuracy: {average_accuracy}")
+    logging.info(f'Total Models Trained  {total_rounds * 10}')
+
+    # return the above metrics in a dict
+    return {'Total Rounds': total_rounds, 'Total Accuracy': total_accuracy, 'Average Accuracy': average_accuracy, 'Total Models Trained': total_rounds * 10}

@@ -10,7 +10,6 @@ from typing import Any, Dict
 import torch
 import torch.nn.functional as F
 from diskcache import Index
-from pytorch_lightning import seed_everything
 from torch.nn.init import kaiming_uniform_
 from torchvision.transforms import Compose, Normalize, RandomHorizontalFlip, Resize
 
@@ -18,7 +17,7 @@ from torchvision.transforms import Compose, Normalize, RandomHorizontalFlip, Res
 from tracefl.models import initialize_model
 from tracefl.neuron_activation import get_neurons_activations
 
-seed_everything(786)
+
 
 
 def _make_all_subsets_of_size_n(s, n):
