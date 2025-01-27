@@ -154,7 +154,7 @@ python -m tracefl.main dirichlet_alpha=0.1
 [INFO] - Total Rounds: 3
 [INFO] - TraceFL Average Localization Accuracy: 100.0
 ```
-This will also generate a provenance report [TraceFL_clients_contributions.log](TraceFL_clients_contributions) in the current directory. Inspect the file for detailed neuron contributions and responsible clients for each input label.
+This will also generate a provenance report [TraceFL_clients_contributions.log](TraceFL_clients_contributions.log) in the current directory. Inspect the file for detailed neuron contributions and responsible clients for each input label.
 
 - Total runtime is about ~2-3 minutes on CPU, <1 minute on a GPU-enabled machine.
 
