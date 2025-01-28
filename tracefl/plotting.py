@@ -692,8 +692,8 @@ def plot_label_distribution_heatmap_concrete(client2class, labelid2labelname, fn
     df2 = pd.DataFrame(data_matrix, index=[
                        labelid2labelname[label] for label in all_labels], columns=client_ids)
 
-    df2.to_csv(
-        f'results_csvs/label_distribution_proper_labels_{fname_type}.csv')
+    # df2.to_csv(
+    #     f'results_csvs/label_distribution_proper_labels_{fname_type}.csv')
 
     print(f'dataframe: \n{df2}')
     print(f'dataframe: \n{df1}')
@@ -705,7 +705,7 @@ def plot_label_distribution_heatmap_concrete(client2class, labelid2labelname, fn
     plt.xlabel('Hospital ID')
     plt.ylabel('Medical Imaging Label')
     plt.tight_layout()
-    _save_plot(fig, f"label_distribution_proper_labels_{fname_type}")
+    # _save_plot(fig, f"label_distribution_proper_labels_{fname_type}")
 
     fig, ax = _call_before_everyPlot(
         width_inches=3.3374*1.6, height_inches=3.3374/1.618, nrows=1, ncols=1)
@@ -714,7 +714,7 @@ def plot_label_distribution_heatmap_concrete(client2class, labelid2labelname, fn
     plt.xlabel('Hospital ID')
     plt.ylabel('Medical Imaging Label')
     plt.tight_layout()
-    _save_plot(fig, f"label_distribution_numeric_labels_{fname_type}")
+    # _save_plot(fig, f"label_distribution_numeric_labels_{fname_type}")
 
 
 #
@@ -1002,7 +1002,7 @@ def feddebug_comparison_table(cfg):
         comparison_df, alpha=cfg.dirichlet_alpha)
 
     df = pd.DataFrame([comparison_dict])
-    print(df)
+    logging.info(f"\n\n **** Comparison Between TraceFL and FedDebug *** \n{df}")
 
 
 

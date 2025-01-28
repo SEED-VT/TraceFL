@@ -247,7 +247,7 @@ class FederatedProvFalse(FederatedProvTrue):
             fed_debug_result['FedDebug Accuracy'] = temp_dict['eval_metrics']['accuracy']
             fed_debug_result['FedDebug avg_fault_localization_time'] = temp_dict['avg_fault_localization_time']
             fed_debug_result['FedDebug avg_input_gen_time'] = temp_dict['avg_input_gen_time']
-            print(f'fed_debug_result --> {fed_debug_result}')
+            # print(f'fed_debug_result --> {fed_debug_result}')
 
 
         # print(f'----------------> total subset_test_data {len(self.subset_test_data)}')
@@ -263,7 +263,7 @@ class FederatedProvFalse(FederatedProvTrue):
         }
 
         prov_result = {**prov_result, **fed_debug_result}
-        print(f'Prov result {prov_result}')
+        # print(f'Prov result {prov_result}')
         return prov_result
 
 

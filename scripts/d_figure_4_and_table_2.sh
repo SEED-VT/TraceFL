@@ -1,7 +1,7 @@
-echo "      ****************** Differential Privacy-Enabled (Figure-4 and Table-2) ******************"
+echo "      ****************** Differential Privacy (DP) Enabled FL (Figure-4 and Table-2) ******************"
 
 
-device=cuda # cpu, cuda, mps  # mps is only for M chip macs 
+device=cpu # cpu, cuda, mps  # mps is only for M chip macs 
 client_gpu=1 
 key_start='artifact_exp'
 num_clients=10 # change this 

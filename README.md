@@ -165,7 +165,7 @@ Although, any configuration of the TraceFL artifact can be run using the `python
 
 Note about Resource Configuration: The scripts are configured with minimal resource settings to run on standard hardware. To run large-scale experiments as described in the paper (using a cluster of NVIDIA DGX A100 nodes), adjust hardware resources and and scale up the number of clients and rounds in the configuration file.
 
-
+The results in the form of logs will also be saved in [TraceFL_clients_contributions.log](TraceFL_clients_contributions.log)
 
 1. **TraceFL’s Localization Accuracy in Correct Predictions (Figure-2), TraceFL’s Scalability (Table-3 and Figure-5)** 
 ```bash
@@ -173,10 +173,20 @@ bash scripts/a_figure_2_table_3_and_figure_5.sh
 ```
 
 2. **Varying Data Distribution Figure-3**
+   ```bash
+   bash scripts/b_figure_3.sh
+   ```
+   
 
 3. **TraceFL’s Localization Accuracy in Mispredictions (Table-1) and (Figure-6)** 
+   ```bash
+   bash scripts/c_table_1_and_figure_6.sh
+   ```
 
-4. **Differential Privacy-Enabled (Figure-4 and Table-2)**
+4. **Differential Privacy (DP) Enabled FL (Figure-4 and Table-2)**
+   ```bash
+   bash scripts/d_figure_4_and_table_2.sh
+   ```
 
 
 

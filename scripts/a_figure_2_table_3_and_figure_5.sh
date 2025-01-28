@@ -1,7 +1,7 @@
 echo "      ****************** TraceFL’s Localization Accuracy in Correct Predictions (Figure-2), TraceFL’s Scalability (Table-3 and Figure-5) ******************"
 
 
-device=cuda # cpu, cuda, mps  # mps is only for M chip macs 
+device=cpu # cpu, cuda, mps  # mps is only for M chip macs 
 client_gpu=1 
 key_start='artifact_exp'
 num_clients=10 # change this 
