@@ -170,10 +170,11 @@ This will also generate a provenance report [TraceFL_clients_contributions.log](
 ### 5.2 Reproducing Main Paper Experiments
 
 > [!NOTE]
-> - These scripts are also **executable in Colab** [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SEED-VT/TraceFL/blob/main/artifact.ipynb).  
+> - These scripts are also **executable in Colab** [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SEED-VT/TraceFL/blob/main/reproducing.ipynb).  
 > - Simply open the Colab notebook, **uncomment the relevant evaluation cell**, and run.  
 > - They are configured with minimal resource requirements for standard hardware.  
 > - To run large-scale experiments (as in the paper, on a DGX A100 cluster), **adjust your hardware settings** and **increase the number of clients/rounds** in the config.
+
 
 Although any configuration can be run via the command-line, e.g.,:
 ```bash
