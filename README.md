@@ -9,7 +9,7 @@
 **Authors:** [Waris Gill](https://people.cs.vt.edu/waris/), [Ali Anwar](https://chalianwar.github.io/), [Muhammad Ali Gulzar](https://people.cs.vt.edu/~gulzar/)
 
 > [!NOTE] 
-> TraceFL is accepted at ICSE 2025. 
+> TraceFL is accepted at ICSE 2025. TraceFL artifact is fully functional and can run in less than 15 minutes on Google Colab with single click. Read the full README for more details.
 
 ## 1. Purpose
 **TraceFL** is the first interpretabilty techniques that enables interpretability in Federated Learning (FL) by identifying clients responsible for specific global model predictions.  By making such provenance information explicit, developers can **exclude** problematic clients, **reward** high-quality clients, or **debug** misclassifications more systematically.
@@ -172,11 +172,11 @@ Note about Resource Configuration: The scripts are configured with minimal resou
 The results in the form of logs will also be saved in [TraceFL_clients_contributions.log](TraceFL_clients_contributions.log)
 
 1. **TraceFL’s Localization Accuracy in Correct Predictions (Figure-2), TraceFL’s Scalability (Table-3 and Figure-5)** 
-```bash
-bash scripts/a_figure_2_table_3_and_figure_5.sh
-```
-
-1. **Varying Data Distribution Figure-3**
+    ```bash
+    bash scripts/a_figure_2_table_3_and_figure_5.sh
+    ```
+    
+2. **Varying Data Distribution Figure-3**
    ```bash
    bash scripts/b_figure_3.sh
    ```
