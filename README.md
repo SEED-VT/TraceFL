@@ -8,11 +8,13 @@
 **Artifact Archive:** [Figshare Permanent Record](https://doi.org/10.6084/m9.figshare.28293218)  
 **Authors:** [Waris Gill](https://people.cs.vt.edu/waris/), [Ali Anwar](https://chalianwar.github.io/), [Muhammad Ali Gulzar](https://people.cs.vt.edu/~gulzar/)
 
+> [!NOTE] 
+> TraceFL is accepted at ICSE 2025. 
 
 ## 1. Purpose
 **TraceFL** is the first interpretabilty techniques that enables interpretability in Federated Learning (FL) by identifying clients responsible for specific global model predictions.  By making such provenance information explicit, developers can **exclude** problematic clients, **reward** high-quality clients, or **debug** misclassifications more systematically.
 
-<!-- ![TraceFL Working Descripiton](tracefl.png) -->
+
 <img src="tracefl.png" alt="Interpretability in Federated Learning using TraceFL" width="600"/>
 
 
@@ -70,7 +72,8 @@ TraceFL is a **domain-agnostic** framework carefully designed to handle various 
 ## 4. Setup
 
 **System Requirements**:
-- **Orginal Paper Hardware Setup**: To resemble real-world FL and do large scale simulations, we deploy our experiments in [Flower FL framework](https://flower.ai/), running on an enterprise-level cluster of six NVIDIA DGX A100 nodes. Each node is equipped with 2048 GB of memory, at least 128 cores, and an A100 GPU with 80 GB of memory.
+> [!NOTE] 
+> **Orginal Paper Hardware Setup**: To resemble real-world FL and do large scale simulations, we deploy our experiments in [Flower FL framework](https://flower.ai/), running on an enterprise-level cluster of six NVIDIA DGX A100 nodes. Each node is equipped with 2048 GB of memory, at least 128 cores, and an A100 GPU with 80 GB of memory.
 
 - **Artifact Hardware Setup**: We change the default configuration in [tracefl/conf/base.yaml](tracefl/conf/base.yaml) to run representative experiments on Google Colab even with only 2 cpu cores, 12 GB of System RAM and 15 GB of GPU RAM. 
 
@@ -156,11 +159,11 @@ python -m tracefl.main dirichlet_alpha=0.1
 ```
 This will also generate a provenance report [TraceFL_clients_contributions.log](TraceFL_clients_contributions.log) in the current directory. Inspect the file for detailed neuron contributions and responsible clients for each input label.
 
-- Total runtime is about ~2-3 minutes on CPU, <1 minute on a GPU-enabled machine.
 
 ### 5.2 Reproducing Main Paper Experiments
 
-[Note] These scripts are also executeable on colab. Click this and uncomment the corresponding script to run the experiment.
+> [!NOTE] 
+> These scripts are also executeable on colab. Click this and uncomment the corresponding script to run the experiment. 
 
 Although, any configuration of the TraceFL artifact can be run using the `python -m tracefl.main dirichlet_alpha=0.1`` command with approprite arguments (e.g., dirichlet_alpha, num_clients, num_rounds), we also provide scripts tha can validate each result of the corresponding figure or table in the paper.  
 
@@ -173,7 +176,7 @@ The results in the form of logs will also be saved in [TraceFL_clients_contribut
 bash scripts/a_figure_2_table_3_and_figure_5.sh
 ```
 
-2. **Varying Data Distribution Figure-3**
+1. **Varying Data Distribution Figure-3**
    ```bash
    bash scripts/b_figure_3.sh
    ```
