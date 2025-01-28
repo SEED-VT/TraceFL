@@ -161,6 +161,8 @@ This will also generate a provenance report [TraceFL_clients_contributions.log](
 
 ### 5.2 Reproducing Main Paper Experiments
 
+[Note] These scripts are also executeable on colab. Click this and uncomment the corresponding script to run the experiment.
+
 Although, any configuration of the TraceFL artifact can be run using the `python -m tracefl.main dirichlet_alpha=0.1`` command with approprite arguments (e.g., dirichlet_alpha, num_clients, num_rounds), we also provide scripts tha can validate each result of the corresponding figure or table in the paper.  
 
 Note about Resource Configuration: The scripts are configured with minimal resource settings to run on standard hardware. To run large-scale experiments as described in the paper (using a cluster of NVIDIA DGX A100 nodes), adjust hardware resources and and scale up the number of clients and rounds in the configuration file.
@@ -189,26 +191,20 @@ bash scripts/a_figure_2_table_3_and_figure_5.sh
    ```
 
 
+### 5.3 Beyond Replication: Customizing TraceFL
+
+TraceFL is designed to be easily extensible to new datasets, models, and configurations. For instance,  [Hugging Face](https://huggingface.co) libarary has approximately 80k text classifications models, 15k image classification models, 5k text classification datasets, and 1k image classification datasets. TraceFL is written to be easily adaptable to these models and datasets with minimal changes (10-15 lines code). 
+
+To demonstrate this, we run [distilbert/distilbert-base-uncased](https://huggingface.co/distilbert/distilbert-base-uncased) which is not included in the paper with dataset.  `dbpedia_14`
+
+```bash
+python -m tracefl.main dataset.name=dbpedia_14  model.name=distilbert/distilbert-base-uncased device=cuda
+
+```
 
 
 
-5. **Google Colab**:  
-   - Open [artifact.ipynb](https://colab.research.google.com/github/SEED-VT/TraceFL/blob/main/artifact.ipynb) directly in Colab for a one-click environment.
 
-
-
-### 5.3 Extending/Repurposing TraceFL
-
-- **Switching Models**: Use any HuggingFace model name (e.g., `bert-base-cased`) or a known vision model (`resnet18`, `densenet121`) in the command line or `base.yaml`.  
-- **Switching Datasets**: Provide any classification dataset recognized by [FlowerDatasets](https://flower.ai/docs/datasets/index.html), or adapt the YAML config to your custom dataset.  
-- **Customizing Hyperparameters**: Edit `tracefl/conf/base.yaml` or pass flags (e.g., `--num_rounds`, `--dirichlet_alpha`) directly to `python -m tracefl.main`.
-
-
-### 5.4. Evidence of Correctness
-
-- **Comparison to FedDebug**: We include scripts in `table1.sh` for Table 1, showcasing how TraceFL outperforms FedDebug in localizing responsible clients.  
-- **Accuracy & Scalability**: Scripts in `figure.sh` and `figure4.sh` replicate the main results (over 20,000+ client models in the original paper).  
-- **Logging and Outputs**: All scripts produce logs in `logs/`. Compare them to sample logs in `logs/sample_output_reference/` for verification.
 
 
 ## 6 License
@@ -226,21 +222,28 @@ This artifact is released under [![License: MIT](https://img.shields.io/badge/Li
 
 2. **Functional**  
    - Documented installation procedures.  
-   - Includes a quick “smoke test” (`--num_clients=2 --rounds=1`) that verifies correctness.  
+   - Includes a one-click Google Colab setup for quick validation.  
    - Reproduces major results from the paper via the provided scripts.  
 
 3. **Reusable**  
    - Carefully organized code (modular architecture, YAML configuration).  
-   - Clear extension instructions for new datasets or neural architectures.  
+   - Extension for new datasets or neural architectures.  
    - A permissive, open-source license ensures freedom to reuse.  
-   - Docker support for guaranteed consistency.
-
+   -  Fully functional minimal Google Colab setup (better than docker) and fully functional local setup to can run on industrial scale HPC clusters to do real world FL simulations.   
 
 ## 9. Contact and Support
 
 - For any installation or usage issues, please open a GitHub Issue at [TraceFL Issues](https://github.com/SEED-VT/TraceFL/issues).  
-- For questions related to the paper or advanced usage, contact the authors directly via their homepages.
+- For questions related to the paper or advanced usage, contact the author directly via (waris@vt.edu)[waris@vt.edu]. 
 
+
+### Award Considerations
+- **First-of-its-kind:** TraceFL is the first FL interpretability framework to identify clients responsible for global model predictions and addresses the open challenge of interpretability in FL.
+- **Cross-Domain Validation:** Works with 4 model architectures across 6 datasets including real-world medical imaging datasets including modern architectures like GPT.  
+- **Scalability:** From Colab-free tier to multi-GPU clusters
+- **Reproducibility:** Each evaluation in a figure or table in the paper can be replicated with a single script.
+- **Impact:** First FL interpretability framework supporting both CV/NLP
+- **Innovation:** Implements novel neuron provenance tracking methodology
 
 ### Citation
 If you use TraceFL in your research, please cite our paper:
@@ -253,24 +256,3 @@ If you use TraceFL in your research, please cite our paper:
   organization = {IEEE},
 }
 ```
-
-### Award Considerations
-
-We hope that providing:
-1. **A Docker image** for consistent one-click reproducibility,  
-2. **Comprehensive documentation** with minimal-run examples,  
-3. **Rich demonstration** of adapting to new tasks, and  
-4. **Transparent licensing and archiving**,  
-
-will make TraceFL a valuable and **exemplary** artifact for the ICSE community.
-
-### Award Considerations
-- **Cross-Domain Validation:** Works with 4 model architectures across 6 datasets
-- **Scalability:** From Colab-free tier to multi-GPU clusters
-- **Reproducibility:** 100% result matching via version-pinned dependencies
-- **Impact:** First FL interpretability framework supporting both CV/NLP
-- **Innovation:** Implements novel neuron provenance tracking methodology
-
-
-**Enjoy Debugging Federated Learning with TraceFL!**  
-_“Interpretability bridging the gap between global model predictions and local client contributions.”_

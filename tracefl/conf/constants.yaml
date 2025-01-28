@@ -8,7 +8,6 @@ check_dataset_cache: True
 
 dataset_channels:
     cifar10: 3 # RGB
-    femnist: 3 # Grey
     mnist: 3
     pathmnist: 3
     organamnist: 3
@@ -18,23 +17,16 @@ dataset_channels:
 
 dataset_classes:
     cifar10: 10
-    femnist: 10
     mnist: 10
     pathmnist: 9
     organamnist: 11
-    superb: 12 # audio
     yahoo_answers_topics: 10 # Text
     dbpedia_14: 14 # Text
 
 model_arch:
-    microsoft/deberta-v3-base: transformer
-    squeezebert/squeezebert-uncased: transformer
     distilbert/distilbert-base-uncased: transformer
-    microsoft/MiniLM-L12-H384-uncased: transformer
     openai-community/openai-gpt: transformer
     google-bert/bert-base-cased: transformer
-    google-bert/bert-large-cased: transformer
-    Intel/dynamic_tinybert: transformer
     resnet18: cnn
     densenet121: cnn
 

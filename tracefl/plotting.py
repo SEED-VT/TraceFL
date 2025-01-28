@@ -54,8 +54,10 @@ def _get_paper_name(name):
     d['PathologicalPartitioner-3'] = 'Pathological'
     d['non_iid_dirichlet'] = 'Dirichlet'
 
-    return d[name]
-
+    try:
+        return d[name]
+    except:
+        return name
 
 def smooting_filter(column_values):
     # return savgol_filter(column_values, window_length=6, polyorder=1)

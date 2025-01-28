@@ -180,6 +180,7 @@ def train_test_transforms_factory(cfg):
             del example['image']
             return example
         return {'train': apply_transform, 'test': apply_transform}
+    
 
     else:
         raise ValueError(f"Unknown dataset: {cfg.dname}")
@@ -288,18 +289,24 @@ def _initialize_audio_dataset(cfg, dat_partitioner_func, fetch_only_test_data):
 
 def _load_dist_based_clients_server_datasets(cfg, dat_partitioner_func, fetch_only_test_data=False):
     """Load the dataset and return the dataload."""
+    print(f"Dataset name: {cfg}")
+    
     if cfg.dname in ["cifar10", "mnist", 'pathmnist', 'organamnist']:
         return _initialize_image_dataset(cfg, dat_partitioner_func, fetch_only_test_data)
 
-    if cfg.dname in ['dbpedia_14', 'yahoo_answers_topics']:
+    elif cfg.dname in ['dbpedia_14', 'yahoo_answers_topics']:
         return _initialize_transformer_dataset(cfg, dat_partitioner_func, fetch_only_test_data)
 
-    elif cfg.dname in ['speech_commands','superb']:
-        return _initialize_audio_dataset(cfg, dat_partitioner_func, fetch_only_test_data)
-
+    elif cfg.architecture == 'cnn':
+        return _initialize_image_dataset(cfg, dat_partitioner_func, fetch_only_test_data)
+    
+    elif cfg.architecture == 'transformer':
+        return _initialize_transformer_dataset(cfg, dat_partitioner_func, fetch_only_test_data)
     else:
-        raise ValueError(f"Dataset {cfg.dname} not supported")
+        raise ValueError(f"Unknown dataset: {cfg.dname}")
 
+    
+    
 
 def getLabelsCount(partition, target_label_col):
     label2count = Counter(example[target_label_col]  # type: ignore
@@ -361,8 +368,11 @@ def _partition_helper(partitioner, cfg, target_label_col, fetch_only_test_data, 
             fds = FederatedDataset(dataset=cfg.dname, partitioners={
                 "train": partitioner})
 
-        server_data = fds.load_split("test").select(
-            range(cfg.max_server_data_size))
+        if len(fds.load_split("test")) < cfg.max_server_data_size:
+            server_data = fds.load_split("test")
+        else:
+            server_data = fds.load_split("test").select(
+                range(cfg.max_server_data_size))
 
     logging.info(
         f"Partition helper: Keys in the dataset are: {server_data[0].keys()}")
