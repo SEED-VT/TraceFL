@@ -168,6 +168,9 @@ Note about Resource Configuration: The scripts are configured with minimal resou
 
 
 1. **TraceFL’s Localization Accuracy in Correct Predictions (Figure-2), TraceFL’s Scalability (Table-3 and Figure-5)** 
+```bash
+bash scripts/a_figure_2_table_3_and_figure_5.sh
+```
 
 2. **Varying Data Distribution Figure-3**
 
