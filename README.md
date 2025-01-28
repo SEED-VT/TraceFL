@@ -85,6 +85,14 @@ To quickly validate and and produce the artifact, click: [![Open in Colab](https
 
 This will open a Google Colab notebook with all dependencies pre-installed. You can run the provided demo script to verify the installation and generate a sample provenance report.
 
+**Expected Outcome ✅**:
+```bash
+...
+[INFO] - ----------------------------
+[INFO] - Total Rounds: 2
+[INFO] - TraceFL Average Localization Accuracy: 100.0
+```
+
 
 ### 4.2 Local/Conda Setup
 
