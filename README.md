@@ -5,7 +5,7 @@
 
 
 **Paper:** [arXiv Preprint](https://arxiv.org/abs/2312.13632)  
-**Artifact Archive:** [Zenodo Permanent Record](https://zenodo.org/records/12345678)  
+**Artifact Archive:** [Figshare Permanent Record](https://doi.org/10.6084/m9.figshare.28293218)  
 **Authors:** [Waris Gill](https://people.cs.vt.edu/waris/), [Ali Anwar](https://chalianwar.github.io/), [Muhammad Ali Gulzar](https://people.cs.vt.edu/~gulzar/)
 
 
@@ -29,8 +29,8 @@
 
 
 **Badges Claimed**:
-<!-- add the actual zenodo link -->
-- **Artifacts Available**: All our code and documentation are publicly and permanently archived ([Zenodo DOI](https://doi.org/xx.xxxx/zenodo.xxxxxx)).
+
+- **Artifacts Available**: All our code and documentation are publicly and permanently archived ([Figshare DOI](https://doi.org/10.6084/m9.figshare.28293218)).
 - **Artifacts Functional**: We include step-by-step installation scripts, test commands, and evidence of correct behavior in a minimal environment.
 - **Artifacts Reusable**: We offer detailed documentation, consistent structure, modular design, a permissive license, and instructions for extending the framework to new models/datasets.
 
@@ -39,8 +39,7 @@
 ## 2. Provenance
 
 - **Paper Preprint:** [ICSE 2025 Camera-Ready](https://arxiv.org/pdf/2312.13632) 
-<!-- add the actual zenodo link -->
-- **Archived Artifact**: The exact version of this repository (including code, configurations, and instructions) is archived at **[Zenodo](https://doi.org/xx.xxxx/zenodo.xxxxxx)**.
+- **Archived Artifact**: The exact version of this repository (including code, configurations, and instructions) is archived at **[Figshare DOI](https://doi.org/10.6084/m9.figshare.28293218)**.
 - **GitHub Repository** (development version): [GitHub - SEED-VT/TraceFL](https://github.com/SEED-VT/TraceFL) (non-archival).  
 - **License:** [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -202,11 +201,6 @@ python -m tracefl.main dataset.name=dbpedia_14  model.name=distilbert/distilbert
 
 ```
 
-
-
-
-
-
 ## 6 License
 This artifact is released under [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE), enabling:
 - Commercial use
@@ -218,7 +212,7 @@ This artifact is released under [![License: MIT](https://img.shields.io/badge/Li
 ## 7. How This Artifact Meets ICSE Criteria
 
 1. **Available**  
-   - Permanently hosted on Zenodo ([DOI](https://doi.org/xx.xxxx/zenodo.xxxxxx)) and supplemented on GitHub.  
+   - Permanently hosted on Figshare ([Figshare DOI](https://doi.org/10.6084/m9.figshare.28293218)) and supplemented on GitHub.  
 
 2. **Functional**  
    - Documented installation procedures.  
@@ -232,7 +226,6 @@ This artifact is released under [![License: MIT](https://img.shields.io/badge/Li
    -  Fully functional minimal Google Colab setup (better than docker) and fully functional local setup to can run on industrial scale HPC clusters to do real world FL simulations.   
 
 ## 9. Contact and Support
-
 - For any installation or usage issues, please open a GitHub Issue at [TraceFL Issues](https://github.com/SEED-VT/TraceFL/issues).  
 - For questions related to the paper or advanced usage, contact the author directly via (waris@vt.edu)[waris@vt.edu]. 
 
