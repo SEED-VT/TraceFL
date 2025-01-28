@@ -6,7 +6,7 @@ exp_key: "Temp-" # Experiment key or name. Useful for uniquely identifying exper
 
 num_clients: 20 # Total number of federated clients.
 clients_per_round: 4 # Number of clients selected per federated round.
-num_rounds: 3 # Number of total federated rounds.
+num_rounds: 2 # Number of total federated rounds.
 
 dirichlet_alpha: 0.3 # Alpha parameter for the Dirichlet distribution # controlling non-IID data splits among clients.
 
