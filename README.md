@@ -9,11 +9,10 @@
 **Authors:** [Waris Gill](https://people.cs.vt.edu/waris/), [Ali Anwar](https://chalianwar.github.io/), [Muhammad Ali Gulzar](https://people.cs.vt.edu/~gulzar/)
 
 > [!NOTE] 
-> TraceFL is accepted at ICSE 2025. TraceFL artifact is fully functional and can run in less than 15 minutes on Google Colab with single click. Read the full README for more details.
+> TraceFL is accepted at ICSE 2025. TraceFL artifact is fully functional and runs in less than 15 minutes on Google Colab with a single click. Read the full README for more details.
 
 ## 1. Purpose
-**TraceFL** is the first interpretabilty techniques that enables interpretability in Federated Learning (FL) by identifying clients responsible for specific global model predictions.  By making such provenance information explicit, developers can **exclude** problematic clients, **reward** high-quality clients, or **debug** misclassifications more systematically.
-
+**TraceFL** is the first **interpretability technique** that enables interpretability in Federated Learning (FL) by identifying clients responsible for specific global model predictions. By making such provenance information explicit, developers can **exclude** problematic clients, **reward** high-quality clients, or **debug** misclassifications more systematically.
 
 <img src="tracefl.png" alt="Interpretability in Federated Learning using TraceFL" width="600"/>
 
@@ -73,9 +72,9 @@ TraceFL is a **domain-agnostic** framework carefully designed to handle various 
 
 **System Requirements**:
 > [!NOTE] 
-> **Orginal Paper Hardware Setup**: To resemble real-world FL and do large scale simulations, we deploy our experiments in [Flower FL framework](https://flower.ai/), running on an enterprise-level cluster of six NVIDIA DGX A100 nodes. Each node is equipped with 2048 GB of memory, at least 128 cores, and an A100 GPU with 80 GB of memory.
+> **Original Paper Hardware Setup**: To resemble real-world FL and do large scale simulations, we deploy our experiments in [Flower FL framework](https://flower.ai/), running on an enterprise-level cluster of six NVIDIA DGX A100 nodes. Each node is equipped with 2048 GB of memory, at least 128 cores, and an A100 GPU with 80 GB of memory.
 
-- **Artifact Hardware Setup**: We change the default configuration in [tracefl/conf/base.yaml](tracefl/conf/base.yaml) to run representative experiments on Google Colab even with only 2 cpu cores, 12 GB of System RAM and 15 GB of GPU RAM. 
+**Artifact Hardware Setup**: We change the default configuration in [tracefl/conf/base.yaml](tracefl/conf/base.yaml) to run representative experiments on Google Colab even with only 2 cpu cores, 12 GB of System RAM and 15 GB of GPU RAM. 
 
 
 We provide **two** approaches to setting up the environment:
@@ -162,14 +161,17 @@ This will also generate a provenance report [TraceFL_clients_contributions.log](
 
 ### 5.2 Reproducing Main Paper Experiments
 
-> [!NOTE] 
-> These scripts are also executeable on colab. Click this and uncomment the corresponding script to run the experiment. 
+> [!NOTE]
+> - These scripts are also **executable in Colab** [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SEED-VT/TraceFL/blob/main/artifact.ipynb).  
+> - Simply open the Colab notebook, **uncomment the relevant evaluation cell**, and run.  
+> - They are configured with minimal resource requirements for standard hardware.  
+> - To run large-scale experiments (as in the paper, on a DGX A100 cluster), **adjust your hardware settings** and **increase the number of clients/rounds** in the config.
 
-Although, any configuration of the TraceFL artifact can be run using the `python -m tracefl.main dirichlet_alpha=0.1`` command with approprite arguments (e.g., dirichlet_alpha, num_clients, num_rounds), we also provide scripts tha can validate each result of the corresponding figure or table in the paper.  
-
-Note about Resource Configuration: The scripts are configured with minimal resource settings to run on standard hardware. To run large-scale experiments as described in the paper (using a cluster of NVIDIA DGX A100 nodes), adjust hardware resources and and scale up the number of clients and rounds in the configuration file.
-
-The results in the form of logs will also be saved in [TraceFL_clients_contributions.log](TraceFL_clients_contributions.log)
+Although any configuration can be run via the command-line, e.g.,:
+```bash
+python -m tracefl.main dirichlet_alpha=0.1
+```
+we provide **scripts** that reproduce each figure/table result from the paper. All generated logs are stored in [TraceFL_clients_contributions.log](TraceFL_clients_contributions.log).
 
 1. **TraceFL’s Localization Accuracy in Correct Predictions (Figure-2), TraceFL’s Scalability (Table-3 and Figure-5)** 
     ```bash
@@ -195,9 +197,9 @@ The results in the form of logs will also be saved in [TraceFL_clients_contribut
 
 ### 5.3 Beyond Replication: Customizing TraceFL
 
-TraceFL is designed to be easily extensible to new datasets, models, and configurations. For instance,  [Hugging Face](https://huggingface.co) libarary has approximately 80k text classifications models, 15k image classification models, 5k text classification datasets, and 1k image classification datasets. TraceFL is written to be easily adaptable to these models and datasets with minimal changes (10-15 lines code). 
+**TraceFL** is easily extensible to new datasets, models, and configurations. For example, the [Hugging Face](https://huggingface.co) library offers approximately 80k text classification models, 15k image classification models, 5k text classification datasets, and 1k image classification datasets. TraceFL can adapt to these with minimal changes (10–15 lines of code).
 
-To demonstrate this, we run [distilbert/distilbert-base-uncased](https://huggingface.co/distilbert/distilbert-base-uncased) which is not included in the paper with dataset.  `dbpedia_14`
+To demonstrate, we integrate the [distilbert/distilbert-base-uncased](https://huggingface.co/distilbert/distilbert-base-uncased) model  which is not included in the paper and  the `dbpedia_14` dataset,
 
 ```bash
 python -m tracefl.main dataset.name=dbpedia_14  model.name=distilbert/distilbert-base-uncased device=cuda
@@ -228,7 +230,7 @@ This artifact is released under [![License: MIT](https://img.shields.io/badge/Li
    - A permissive, open-source license ensures freedom to reuse.  
    -  Fully functional minimal Google Colab setup (better than docker) and fully functional local setup to can run on industrial scale HPC clusters to do real world FL simulations.   
 
-## 9. Contact and Support
+## 8. Contact and Support
 - For any installation or usage issues, please open a GitHub Issue at [TraceFL Issues](https://github.com/SEED-VT/TraceFL/issues).  
 - For questions related to the paper or advanced usage, contact the author directly via (waris@vt.edu)[waris@vt.edu]. 
 
@@ -236,10 +238,10 @@ This artifact is released under [![License: MIT](https://img.shields.io/badge/Li
 ### Award Considerations
 - **First-of-its-kind:** TraceFL is the first FL interpretability framework to identify clients responsible for global model predictions and addresses the open challenge of interpretability in FL.
 - **Cross-Domain Validation:** Works with 4 model architectures across 6 datasets including real-world medical imaging datasets including modern architectures like GPT.  
-- **Scalability:** From Colab-free tier to multi-GPU clusters
+- **Scalability:** From Colab-free tier to multi-GPU clusters.
 - **Reproducibility:** Each evaluation in a figure or table in the paper can be replicated with a single script.
-- **Impact:** First FL interpretability framework supporting both CV/NLP
-- **Innovation:** Implements novel neuron provenance tracking methodology
+- **Impact:** First FL interpretability framework supporting both CV/NLP.
+- **Innovation:** Implements novel neuron provenance tracking methodology.
 
 ### Citation
 If you use TraceFL in your research, please cite our paper:
