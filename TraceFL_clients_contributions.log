@@ -1,83 +1,111 @@
-[INFO] - Training already completed: Temp--resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients20-fedavg-(R3-clientsPerR4)-non_iid_dirichlet0.1-batch32-epochs2-lr0.001, len of results: 4
-[INFO] - Running Provenance
-[INFO] - Starting provenance analysis for Temp--resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients20-fedavg-(R3-clientsPerR4)-non_iid_dirichlet0.1-batch32-epochs2-lr0.001...
+[INFO] -  ***********  Starting Experiment: artifact_exp-resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients10-fedavg-(R2-clientsPerR4)-non_iid_dirichlet0.3-batch32-epochs2-lr0.001 ***************
 [INFO] - 
-Loading dataset from cache storage_of_exps/cache_of_fl_datasets: -dist_type:non_iid_dirichlet-num_clients:20-batch_size:32-dirichlet_alpha:0.1-dname:mnist-mname:resnet18-storage_dir:storage_of_exps/-max_per_client_data_size:2048-max_server_data_size:2048-
+Loading dataset from cache storage_of_exps/cache_of_fl_datasets: -dist_type:non_iid_dirichlet-num_clients:10-batch_size:32-dirichlet_alpha:0.3-dname:mnist-mname:resnet18-storage_dir:storage_of_exps/-max_per_client_data_size:2048-max_server_data_size:2048-
+
+[INFO] - faulty clients: []
+[INFO] - Number of clients: 10
+[INFO] - Participating clients ids  are ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+[INFO] - >> ----------------------------- Running Non-DP FL -----------------------------
+ >> strategy_cfg: {'name': 'fedavg', 'num_rounds': '${num_rounds}', 'clients_per_round': '${clients_per_round}', 'noise_multiplier': '${noise_multiplier}', 'clipping_norm': '${clipping_norm}'} 
+[INFO] - Running the simulation
+[INFO] - Starting Flower ServerApp, config: num_rounds=2, no round_timeout
+[INFO] - 
+[INFO] - [INIT]
+[INFO] - Using initial global parameters provided by strategy
+[INFO] - Evaluating initial global parameters
+[INFO] - initial parameters (loss, other metrics): 0.004530330188572407, {'accuracy': 0.1005859375, 'loss': 0.004530330188572407, 'round': 0}
+[INFO] - 
+[INFO] - [ROUND 1]
+[INFO] - configure_fit: strategy sampled 4 clients (out of 10)
+[INFO] - aggregate_fit: received 4 results and 0 failures
+[INFO] - participating clients: dict_keys(['1', '8', '5', '2'])
+[INFO] - >>   ------------------- Clients Metrics ------------- 
+[INFO] -  Client 1, Loss Train 0.00209684499134255, Accuracy Train 0.98095703125, data_points = 64
+[INFO] -  Client 2, Loss Train 0.004389945451786752, Accuracy Train 0.9587988826815642, data_points = 44
+[INFO] -  Client 5, Loss Train 0.006760127081861356, Accuracy Train 0.939453125, data_points = 64
+[INFO] -  Client 8, Loss Train 0.005827013248108415, Accuracy Train 0.947265625, data_points = 64
+[INFO] - fit progress: (1, 0.004739216063171625, {'accuracy': 0.10400390625, 'loss': 0.004739216063171625, 'round': 1}, 44.28411218198016)
+[INFO] - configure_evaluate: no clients selected, skipping evaluation
+[INFO] - 
+[INFO] - [ROUND 2]
+[INFO] - configure_fit: strategy sampled 4 clients (out of 10)
+[INFO] - aggregate_fit: received 4 results and 0 failures
+[INFO] - participating clients: dict_keys(['5', '1', '2', '4'])
+[INFO] - >>   ------------------- Clients Metrics ------------- 
+[INFO] -  Client 1, Loss Train 0.0016294449632709984, Accuracy Train 0.98291015625, data_points = 64
+[INFO] -  Client 2, Loss Train 0.005937962535269267, Accuracy Train 0.9504189944134078, data_points = 44
+[INFO] -  Client 4, Loss Train 0.004059316270513591, Accuracy Train 0.96875, data_points = 64
+[INFO] -  Client 5, Loss Train 0.005012719576257041, Accuracy Train 0.9560546875, data_points = 64
+[INFO] - fit progress: (2, 0.005449803662486374, {'accuracy': 0.1064453125, 'loss': 0.005449803662486374, 'round': 2}, 86.49455792701337)
+[INFO] - configure_evaluate: no clients selected, skipping evaluation
+[INFO] - 
+[INFO] - [SUMMARY]
+[INFO] - Run finished 2 round(s) in 86.49s
+[INFO] - 	History (loss, centralized):
+[INFO] - 		round 0: 0.004530330188572407
+[INFO] - 		round 1: 0.004739216063171625
+[INFO] - 		round 2: 0.005449803662486374
+[INFO] - 	History (metrics, distributed, fit):
+[INFO] - 	{'accuracy': [(1, 0.2), (2, 0.2)], 'loss': [(1, 0.1), (2, 0.1)]}
+[INFO] - 	History (metrics, centralized):
+[INFO] - 	{'accuracy': [(0, 0.1005859375), (1, 0.10400390625), (2, 0.1064453125)],
+[INFO] - 	 'loss': [(0, 0.004530330188572407),
+[INFO] - 	          (1, 0.004739216063171625),
+[INFO] - 	          (2, 0.005449803662486374)],
+[INFO] - 	 'round': [(0, 0), (1, 1), (2, 2)]}
+[INFO] - 
+[INFO] - Results of gm evaluations each round: [{'loss': 0.004530330188572407, 'accuracy': 0.1005859375}, {'loss': 0.004739216063171625, 'accuracy': 0.10400390625}, {'loss': 0.005449803662486374, 'accuracy': 0.1064453125}]
+[INFO] - Training Complete for: artifact_exp-resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients10-fedavg-(R2-clientsPerR4)-non_iid_dirichlet0.3-batch32-epochs2-lr0.001 
+[INFO] - Running Provenance
+[INFO] - Starting provenance analysis for artifact_exp-resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients10-fedavg-(R2-clientsPerR4)-non_iid_dirichlet0.3-batch32-epochs2-lr0.001...
+[INFO] - 
+Loading dataset from cache storage_of_exps/cache_of_fl_datasets: -dist_type:non_iid_dirichlet-num_clients:10-batch_size:32-dirichlet_alpha:0.3-dname:mnist-mname:resnet18-storage_dir:storage_of_exps/-max_per_client_data_size:2048-max_server_data_size:2048-
 
 [INFO] - Total test data size: 2048
 [INFO] - 
 
-             ----------Round key  Temp--resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients20-fedavg-(R3-clientsPerR4)-non_iid_dirichlet0.1-batch32-epochs2-lr0.001-round:1 -------------- 
+             ----------Round key  artifact_exp-resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients10-fedavg-(R2-clientsPerR4)-non_iid_dirichlet0.3-batch32-epochs2-lr0.001-round:1 -------------- 
 
 [INFO] - Sanity check: 1.0
-[INFO] - client ids: ['19', '10', '14', '1']
-[INFO] -             *********** Input Label: 4, Responsible Client(s): c10,c1  *************
-[INFO] -      Traced Client: c10 || Tracing = Correct
-[INFO] -     TraceFL Clients Contributions Rank:     {'c10': 0.99, 'c1': 0.01, 'c19': 0.0, 'c14': 0.0}
+[INFO] - client ids: ['1', '8', '5', '2']
+[INFO] -             *********** Input Label: 2, Responsible Client(s): c5,c2  *************
+[INFO] -      Traced Client: c5 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c5': 0.52, 'c2': 0.47, 'c1': 0.0, 'c8': 0.0}
 [INFO] - 
 
-[INFO] -             *********** Input Label: 4, Responsible Client(s): c10,c1  *************
-[INFO] -      Traced Client: c10 || Tracing = Correct
-[INFO] -     TraceFL Clients Contributions Rank:     {'c10': 0.99, 'c1': 0.01, 'c19': 0.0, 'c14': 0.0}
+[INFO] -             *********** Input Label: 2, Responsible Client(s): c5,c2  *************
+[INFO] -      Traced Client: c5 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c5': 0.52, 'c2': 0.48, 'c1': 0.0, 'c8': 0.0}
 [INFO] - 
 
-[INFO] - [Round 1] TraceFL Localization Accuracy = 100.0 || Total Inputs Used In Prov: 2 || GM_(loss, acc) (3.1374173164367676,0.099609375)
+[INFO] - [Round 1] TraceFL Localization Accuracy = 100.0 || Total Inputs Used In Prov: 2 || GM_(loss, acc) (2.4264965057373047,0.10400390625)
 [INFO] - 
 
-             ----------Round key  Temp--resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients20-fedavg-(R3-clientsPerR4)-non_iid_dirichlet0.1-batch32-epochs2-lr0.001-round:2 -------------- 
+             ----------Round key  artifact_exp-resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients10-fedavg-(R2-clientsPerR4)-non_iid_dirichlet0.3-batch32-epochs2-lr0.001-round:2 -------------- 
 
 [INFO] - Sanity check: 1.0
-[INFO] - client ids: ['1', '10', '17', '11']
-[INFO] -             *********** Input Label: 4, Responsible Client(s): c1,c10  *************
-[INFO] -      Traced Client: c10 || Tracing = Correct
-[INFO] -     TraceFL Clients Contributions Rank:     {'c10': 0.99, 'c1': 0.01, 'c11': 0.0, 'c17': 0.0}
+[INFO] - client ids: ['5', '1', '2', '4']
+[INFO] -             *********** Input Label: 0, Responsible Client(s): c5,c1,c2,c4  *************
+[INFO] -      Traced Client: c2 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c2': 0.45, 'c1': 0.41, 'c4': 0.1, 'c5': 0.03}
 [INFO] - 
 
-[INFO] -             *********** Input Label: 4, Responsible Client(s): c1,c10  *************
-[INFO] -      Traced Client: c10 || Tracing = Correct
-[INFO] -     TraceFL Clients Contributions Rank:     {'c10': 0.99, 'c1': 0.01, 'c11': 0.0, 'c17': 0.0}
+[INFO] -             *********** Input Label: 0, Responsible Client(s): c5,c1,c2,c4  *************
+[INFO] -      Traced Client: c2 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c2': 0.46, 'c1': 0.42, 'c4': 0.09, 'c5': 0.03}
 [INFO] - 
 
-[INFO] - [Round 2] TraceFL Localization Accuracy = 100.0 || Total Inputs Used In Prov: 2 || GM_(loss, acc) (3.9169530868530273,0.099609375)
+[INFO] -             *********** Input Label: 2, Responsible Client(s): c5,c2,c4  *************
+[INFO] -      Traced Client: c5 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c5': 0.45, 'c2': 0.44, 'c4': 0.07, 'c1': 0.04}
 [INFO] - 
 
-             ----------Round key  Temp--resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients20-fedavg-(R3-clientsPerR4)-non_iid_dirichlet0.1-batch32-epochs2-lr0.001-round:3 -------------- 
-
-[INFO] - Sanity check: 1.0
-[INFO] - client ids: ['16', '1', '9', '19']
-[INFO] -             *********** Input Label: 0, Responsible Client(s): c16,c1,c19  *************
-[INFO] -      Traced Client: c16 || Tracing = Correct
-[INFO] -     TraceFL Clients Contributions Rank:     {'c16': 0.95, 'c1': 0.03, 'c19': 0.02, 'c9': 0.0}
+[INFO] -             *********** Input Label: 2, Responsible Client(s): c5,c2,c4  *************
+[INFO] -      Traced Client: c5 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c5': 0.47, 'c2': 0.44, 'c4': 0.06, 'c1': 0.03}
 [INFO] - 
 
-[INFO] -             *********** Input Label: 0, Responsible Client(s): c16,c1,c19  *************
-[INFO] -      Traced Client: c16 || Tracing = Correct
-[INFO] -     TraceFL Clients Contributions Rank:     {'c16': 0.95, 'c1': 0.02, 'c19': 0.02, 'c9': 0.0}
-[INFO] - 
-
-[INFO] -             *********** Input Label: 5, Responsible Client(s): c1,c9  *************
-[INFO] -      Traced Client: c1 || Tracing = Correct
-[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.58, 'c9': 0.28, 'c16': 0.07, 'c19': 0.07}
-[INFO] - 
-
-[INFO] -             *********** Input Label: 5, Responsible Client(s): c1,c9  *************
-[INFO] -      Traced Client: c1 || Tracing = Correct
-[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.63, 'c9': 0.26, 'c16': 0.06, 'c19': 0.05}
-[INFO] - 
-
-[INFO] -             *********** Input Label: 8, Responsible Client(s): c1  *************
-[INFO] -      Traced Client: c1 || Tracing = Correct
-[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.98, 'c16': 0.01, 'c9': 0.01, 'c19': 0.01}
-[INFO] - 
-
-```
-[INFO] -             *********** Input Label: 8, Responsible Client(s): c1  *************
-[INFO] -      Traced Client: c1 || Tracing = Correct
-[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.98, 'c16': 0.01, 'c19': 0.01, 'c9': 0.01}
-[INFO] - 
-
-[INFO] - [Round 3] TraceFL Localization Accuracy = 100.0 || Total Inputs Used In Prov: 6 || GM_(loss, acc) (3.24006986618042,0.18896484375)
+[INFO] - [Round 2] TraceFL Localization Accuracy = 100.0 || Total Inputs Used In Prov: 4 || GM_(loss, acc) (2.790354013442993,0.1064453125)
 [INFO] - ----------------------------
-[INFO] - Total Rounds: 3
+[INFO] - Total Rounds: 2
 [INFO] - TraceFL Average Localization Accuracy: 100.0
-```

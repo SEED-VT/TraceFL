@@ -78,7 +78,7 @@ TraceFL is a **domain-agnostic** framework carefully designed to handle various 
 
 We provide **two** approaches to setting up the environment:
 
-## 4.1 Quick Colab Setup 
+### 4.1 Quick Colab Setup 
 
 To quickly validate and and produce the artifact, click: [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SEED-VT/TraceFL/blob/main/artifact.ipynb). 
 
@@ -144,6 +144,7 @@ python -m tracefl.main dirichlet_alpha=0.1
 - The script trains a small FL setup with 2 clients on MNIST for 1 round.  
 - If successful, the console logs will indicate completion with a message like:  
 ```bash
+...
 [INFO] -             *********** Input Label: 8, Responsible Client(s): c1  *************
 [INFO] -      Traced Client: c1 || Tracing = Correct
 [INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.98, 'c16': 0.01, 'c19': 0.01, 'c9': 0.01}
@@ -160,33 +161,28 @@ This will also generate a provenance report [TraceFL_clients_contributions.log](
 
 ### 5.2 Reproducing Main Paper Experiments
 
-1. **Default Configuration** (example run):
-   ```bash
-   # By default, reads from tracefl/conf/base.yaml
-   python -m tracefl.main
-   ```
-   This trains a DenseNet model on PathMNIST with 10 clients, demonstrating how to replicate the *core approach* from the paper.
+Although, any configuration of the TraceFL artifact can be run using the `python -m tracefl.main dirichlet_alpha=0.1`` command with approprite arguments (e.g., dirichlet_alpha, num_clients, num_rounds), we also provide scripts tha can validate each result of the corresponding figure or table in the paper.  
 
-2. **Specific Figures/Tables**:
-   - **Figure 2, Table 3, Figure 5**: 
-     ```bash
-     chmod +x figure.sh
-     ./figure.sh
-     ```
-     This script runs multiple dataset/model configurations and logs results to `logs/`.
-   - **Table 2, Figure 4**:
-     ```bash
-     chmod +x figure4.sh
-     ./figure4.sh
-     ```
-   - **Table 1, Figure 6**:
-     ```bash
-     chmod +x table1.sh
-     ./table1.sh
-     ```
+Note about Resource Configuration: The scripts are configured with minimal resource settings to run on standard hardware. To run large-scale experiments as described in the paper (using a cluster of NVIDIA DGX A100 nodes), adjust hardware resources and and scale up the number of clients and rounds in the configuration file.
 
-3. **Google Colab**:  
+
+
+1. **TraceFL’s Localization Accuracy in Correct Predictions (Figure-2), TraceFL’s Scalability (Table-3 and Figure-5)** 
+
+2. **Varying Data Distribution Figure-3**
+
+3. **TraceFL’s Localization Accuracy in Mispredictions (Table-1) and (Figure-6)** 
+
+4. **Differential Privacy-Enabled (Figure-4 and Table-2)**
+
+
+
+
+
+5. **Google Colab**:  
    - Open [artifact.ipynb](https://colab.research.google.com/github/SEED-VT/TraceFL/blob/main/artifact.ipynb) directly in Colab for a one-click environment.
+
+
 
 ### 5.3 Extending/Repurposing TraceFL
 
