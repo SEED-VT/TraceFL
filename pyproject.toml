@@ -48,6 +48,7 @@ evaluate = "^0.4.3"
 transformers = {extras = ["torch"], version = "^4.48.1"}
 medmnist = "^3.0.2"
 pathvalidate = "^3.2.3"
+ipykernel = "^6.29.5"
 
 [tool.poetry.dev-dependencies]
 isort = "==5.13.2"
