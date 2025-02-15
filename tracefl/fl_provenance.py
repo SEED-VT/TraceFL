@@ -2,7 +2,6 @@ import logging
 import time
 import torch 
 from diskcache import Index
-
 from tracefl.dataset import get_clients_server_data
 from tracefl.fl_provenance_modules import FederatedProvTrue
 from tracefl.utils import get_prov_eval_metrics

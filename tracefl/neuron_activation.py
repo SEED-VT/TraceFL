@@ -1,5 +1,4 @@
 """The file contains the code to get the activations of all neurons."""
-
 import torch
 import torch.nn.functional as F
 

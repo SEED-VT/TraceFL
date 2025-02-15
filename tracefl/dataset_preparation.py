@@ -9,23 +9,20 @@ block) that this file should be executed first.
 
 
 
-import torchvision.transforms as transforms
-from medmnist import INFO
 import medmnist
-from datasets import Dataset, DatasetDict
 import logging
 import torch
+from datasets import Dataset, DatasetDict
+from medmnist import INFO
 from collections import Counter
-
 from torchvision.transforms import Compose, Resize, ToTensor, Normalize, RandomHorizontalFlip
+import torchvision.transforms as transforms
 from flwr_datasets import FederatedDataset
 from flwr_datasets.partitioner import DirichletPartitioner
 from transformers import AutoTokenizer
 from flwr_datasets.partitioner import PathologicalPartitioner
 from flwr_datasets.partitioner import ShardPartitioner
 from functools import partial
-
-
 
 
 def _get_medmnist(data_flag='pathmnist', download=True):

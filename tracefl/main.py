@@ -3,18 +3,15 @@
 It includes processioning the dataset, instantiate strategy, specify how the global
 model is going to be evaluated, etc. At the end, this script saves the results.
 """
-
 import gc
 import logging
 import random
 import copy
-
 import flwr as fl
 import hydra
 import torch
 from diskcache import Index
 from flwr.common import ndarrays_to_parameters
-
 from tracefl.client import FlowerClient, get_parameters, set_parameters
 from tracefl.dataset import get_clients_server_data, mdedical_dataset2labels, convert_client2_faulty_client
 from tracefl.models import global_model_eval, initialize_model
