@@ -13,21 +13,15 @@ import torchvision.transforms as transforms
 from medmnist import INFO
 import medmnist
 from datasets import Dataset, DatasetDict
-import random
 import logging
 import torch
-import torchvision
 from collections import Counter
-from tqdm import tqdm
 
 from torchvision.transforms import Compose, Resize, ToTensor, Normalize, RandomHorizontalFlip
 from flwr_datasets import FederatedDataset
 from flwr_datasets.partitioner import DirichletPartitioner
-import tqdm
-from transformers import AutoTokenizer, AutoProcessor
-
+from transformers import AutoTokenizer
 from flwr_datasets.partitioner import PathologicalPartitioner
-
 from flwr_datasets.partitioner import ShardPartitioner
 from functools import partial
 
@@ -35,6 +29,22 @@ from functools import partial
 
 
 def _get_medmnist(data_flag='pathmnist', download=True):
+    """
+    Load and convert the MedMNIST dataset into a Hugging Face DatasetDict.
+
+    Parameters
+    ----------
+    data_flag : str, optional
+        The key indicating which MedMNIST dataset to load (default is 'pathmnist').
+    download : bool, optional
+        Whether to download the dataset if not present locally (default is True).
+
+    Returns
+    -------
+    DatasetDict
+        A dictionary with keys "train" and "test", each containing a Hugging Face Dataset
+        of images and corresponding labels.
+    """ 
     info = INFO[data_flag]
     n_channels = info['n_channels']
     n_classes = len(info['label'])
@@ -70,6 +80,26 @@ def _get_medmnist(data_flag='pathmnist', download=True):
 
 
 def tokenize_function_factory(cfg):
+    """
+    Create and return a tokenizer function based on the provided configuration.
+
+    The returned function will tokenize examples from the dataset according to the dataset
+    type. For "dbpedia_14", it tokenizes the "content" field; for others (like Yahoo Answers),
+    it may combine different fields.
+
+    Parameters
+    ----------
+    cfg : object
+        A configuration object that must include:
+            - dname: Name of the dataset.
+            - mname: The model name or tokenizer identifier.
+
+    Returns
+    -------
+    function
+        A function that accepts a batch of examples and returns tokenized outputs.
+    """ 
+    
     input_col_name = "content" if cfg.dname == "dbpedia_14" else "text"
 
     def _default_tokenize_function(examples):
@@ -79,11 +109,6 @@ def tokenize_function_factory(cfg):
         examples['label'] = examples['topic']
         return tokenizer(examples['question_title'] + ' ' + examples['question_content'], truncation=True, padding='max_length', max_length=128)
 
-    # tokenizer = AutoTokenizer.from_pretrained(
-    #     cfg.mname, trust_remote_code=True)
-    # if tokenizer.pad_token is None:
-    #     tokenizer.pad_token = tokenizer.eos_token if tokenizer.eos_token is not None else tokenizer.add_special_tokens({
-    #                                                                                                                    'pad_token': '[PAD]'})
 
     tokenizer = AutoTokenizer.from_pretrained(
         cfg.mname, trust_remote_code=True)
@@ -100,9 +125,32 @@ def tokenize_function_factory(cfg):
 
 
 def train_test_transforms_factory(cfg):
+    """
+    Create and return train and test transformation functions for image datasets.
+
+    Depending on the dataset name specified in the configuration (cfg.dname), this function
+    returns a dictionary with keys 'train' and 'test' that map to transformation functions.
+
+    Parameters
+    ----------
+    cfg : object
+        A configuration object that must include:
+            - dname: Name of the dataset (e.g. "cifar10", "mnist", "pathmnist", etc.).
+
+    Returns
+    -------
+    dict
+        A dictionary with two keys:
+            - 'train': Transformation function for training data.
+            - 'test': Transformation function for test data.
+
+    Raises
+    ------
+    ValueError
+        If the dataset name is not recognized.
+    """
     train_transforms = None
     test_transforms = None
-    # image_processor = AutoImageProcessor.from_pretrained(cfg.mname)
     if cfg.dname == "cifar10":
         def apply_train_transformCifar(example):
             transform = Compose([
@@ -157,8 +205,6 @@ def train_test_transforms_factory(cfg):
 
             example['pixel_values'] = [
                 transform(image.convert("RGB")) for image in example['image']]
-            # example['pixel_values'] = transform(
-            #     example['image'].convert("RGB"))
             example['label'] = torch.tensor(example['label'])
             del example['image']
 
@@ -188,62 +234,30 @@ def train_test_transforms_factory(cfg):
     return {'train': train_transforms, 'test': test_transforms}
 
 
-# def getAudioTransform(cfg, max_duration=1.0):
-#     # Load the feature extractor
-#     feature_extractor = AutoFeatureExtractor.from_pretrained(cfg.mname)
-
-#     # Preprocessing function
-#     def preprocess_function(examples):
-#         audio_arrays = [x["array"] for x in examples["audio"]]
-#         inputs = feature_extractor(
-#             audio_arrays,
-#             sampling_rate=feature_extractor.sampling_rate,
-#             max_length=int(feature_extractor.sampling_rate * max_duration),
-#             truncation=True,
-#         )
-#         return inputs
-
-#     return preprocess_function
-
-
-def getAudioTransforms(cfg, max_duration=1.0):
-    processor = AutoProcessor.from_pretrained(cfg.mname)
-    feature_extractor = processor.feature_extractor
-
-    def preprocessFunctionGeneric(examples):
-        audio_arrays = [x["array"] for x in examples["audio"]]
-        int(feature_extractor.sampling_rate * max_duration)
-
-        processed_inputs = feature_extractor(
-            audio_arrays,
-            sampling_rate=feature_extractor.sampling_rate,
-            max_length=int(feature_extractor.sampling_rate * max_duration),
-            truncation=True,
-            return_tensors="pt",
-            padding=True,
-        )
-        processed_inputs["label"] = examples["label"]
-        return processed_inputs
-
-    def preprocessFunctionWhisper(examples):
-        audio_arrays = [x["array"] for x in examples["audio"]]
-        int(feature_extractor.sampling_rate * max_duration)
-
-        processed_inputs = feature_extractor(
-            audio_arrays,
-            sampling_rate=feature_extractor.sampling_rate,
-            return_tensors="pt",
-        )
-        processed_inputs["label"] = examples["label"]
-        return processed_inputs
-
-    if cfg.mname == "openai/whisper-tiny":
-        return {'train': preprocessFunctionWhisper, 'test': preprocessFunctionWhisper}
-    else:
-        return {'train': preprocessFunctionGeneric, 'test': preprocessFunctionGeneric}
-
-
 def _initialize_image_dataset(cfg, dat_partitioner_func, fetch_only_test_data):
+    """
+    Initialize and process an image dataset by applying train/test transformations.
+
+    This function partitions the dataset using the provided partitioner function,
+    then applies the image transformation functions to both client and server datasets.
+
+    Parameters
+    ----------
+    cfg : object
+        A configuration object containing dataset and partitioning parameters.
+    dat_partitioner_func : function
+        The function that partitions the dataset into client and server splits.
+    fetch_only_test_data : bool
+        If True, only the test data will be fetched.
+
+    Returns
+    -------
+    dict
+        A dictionary containing:
+            - 'client2data': Mapping of client IDs to transformed training data.
+            - 'server_data': Transformed test data.
+    """
+
     target_label_col = "label"
 
     d = dat_partitioner_func(cfg, target_label_col, fetch_only_test_data)
@@ -256,6 +270,27 @@ def _initialize_image_dataset(cfg, dat_partitioner_func, fetch_only_test_data):
 
 
 def _initialize_transformer_dataset(cfg, dat_partitioner_func, fetch_only_test_data):
+    """
+    Initialize and process a transformer-based dataset by tokenizing text data.
+
+    The function partitions the dataset using the provided partitioner function and
+    applies the appropriate tokenization function to both client and server datasets.
+
+    Parameters
+    ----------
+    cfg : object
+        A configuration object containing dataset and partitioning parameters.
+    dat_partitioner_func : function
+        The function that partitions the dataset.
+    fetch_only_test_data : bool
+        If True, only test data is processed.
+
+    Returns
+    -------
+    dict
+        A dictionary with keys 'client2data' and 'server_data' containing tokenized data.
+    """
+    
     target_label_col = "label"
     if cfg.dname == "yahoo_answers_topics":
         target_label_col = "topic"
@@ -268,27 +303,38 @@ def _initialize_transformer_dataset(cfg, dat_partitioner_func, fetch_only_test_d
     return d
 
 
-def _initialize_audio_dataset(cfg, dat_partitioner_func, fetch_only_test_data):
-    transforms_dict = getAudioTransforms(cfg)
-    transform_train = transforms_dict['train']
-    transform_test = transforms_dict['test']
-
-    target_label_col = "label"
-    logging.info(
-        f'>> Audio dataset: {cfg.dname} and target_label_col: {target_label_col}')
-    d = dat_partitioner_func(
-        cfg, target_label_col, fetch_only_test_data, subtask="ks")
-    # audio_transform = preprocess_audio
-
-    d['client2data'] = {k: v.map(transform_train, remove_columns=[
-                                 "audio", "file"], batched=True, batch_size=256, num_proc=8) for k, v in d['client2data'].items()}
-    d['server_data'] = d['server_data'].map(transform_test, remove_columns=[
-                                            "audio", "file"], batched=True, batch_size=256, num_proc=8)
-    return d
-
-
 def _load_dist_based_clients_server_datasets(cfg, dat_partitioner_func, fetch_only_test_data=False):
-    """Load the dataset and return the dataload."""
+    """
+    Load and partition the dataset into client and server splits based on a distribution strategy.
+
+    Depending on the dataset type and architecture specified in the configuration,
+    this function initializes either an image or transformer dataset.
+
+    Parameters
+    ----------
+    cfg : object
+        A configuration object containing dataset information (e.g. dname, architecture).
+    dat_partitioner_func : function
+        The partitioner function to use for splitting the data.
+    fetch_only_test_data : bool, optional
+        If True, only the test data is loaded (default is False).
+
+    Returns
+    -------
+    dict
+        A dictionary containing:
+            - 'client2data': Client-specific training data.
+            - 'server_data': Server test data.
+            - 'client2class': Class counts per client.
+            - 'fds': FederatedDataset object used for partitioning.
+
+    Raises
+    ------
+    ValueError
+        If the dataset name or architecture is unknown.
+    """
+    
+    
     print(f"Dataset name: {cfg}")
     
     if cfg.dname in ["cifar10", "mnist", 'pathmnist', 'organamnist']:
@@ -306,16 +352,54 @@ def _load_dist_based_clients_server_datasets(cfg, dat_partitioner_func, fetch_on
         raise ValueError(f"Unknown dataset: {cfg.dname}")
 
     
-    
-
 def getLabelsCount(partition, target_label_col):
+    """
+    Count the number of occurrences for each label in a dataset partition.
+
+    Parameters
+    ----------
+    partition : Dataset or list-like
+        The dataset partition where each example contains the target label.
+    target_label_col : str
+        The key corresponding to the label in each example.
+
+    Returns
+    -------
+    dict
+        A dictionary mapping each label to its count.
+    """
+    
     label2count = Counter(example[target_label_col]  # type: ignore
                           for example in partition)  # type: ignore
-
     return dict(label2count)
 
 
 def _fix_partition(cfg, c_partition, target_label_col):
+    """
+    Clean and truncate a client data partition based on minimum sample requirements.
+
+    This function filters out labels with fewer than 10 occurrences, then limits the
+    partition size to a maximum specified by the configuration. It also ensures that the
+    final partition size is compatible with the batch size.
+
+    Parameters
+    ----------
+    cfg : object
+        Configuration object with attributes:
+            - max_per_client_data_size : int, maximum allowed data per client.
+            - batch_size : int, the batch size for training.
+    c_partition : Dataset or list-like
+        The original dataset partition for a client.
+    target_label_col : str
+        The key corresponding to the label in each example.
+
+    Returns
+    -------
+    dict
+        A dictionary with keys:
+            - 'partition': The cleaned and possibly truncated dataset partition.
+            - 'partition_labels_count': The count of labels in the partition.
+    """
     label2count = getLabelsCount(c_partition, target_label_col)
 
     filtered_labels = {label: count for label,
@@ -340,6 +424,40 @@ def _fix_partition(cfg, c_partition, target_label_col):
 
 
 def _partition_helper(partitioner, cfg, target_label_col, fetch_only_test_data, subtask):
+    """
+    Partition the dataset among clients and prepare the server test data.
+
+    This helper function uses the provided partitioner to distribute data among clients.
+    It then fixes each client partition (if needed) and collects class counts.
+
+    Parameters
+    ----------
+    partitioner : object
+        An instance of a partitioner (e.g. DirichletPartitioner, ShardPartitioner).
+    cfg : object
+        A configuration object containing:
+            - num_clients: Number of clients.
+            - max_server_data_size: Maximum number of samples for the server.
+            - max_per_client_data_size: Maximum samples allowed per client.
+            - batch_size: Batch size used during training.
+            - dname: Dataset name.
+    target_label_col : str
+        The label key used for partitioning.
+    fetch_only_test_data : bool
+        If True, only test data is processed.
+    subtask : optional
+        If specified, indicates a subset of data to be used.
+
+    Returns
+    -------
+    dict
+        A dictionary with the following keys:
+            - 'client2data': Mapping of client IDs to their dataset partitions.
+            - 'server_data': The server test dataset.
+            - 'client2class': Mapping of client IDs to label counts.
+            - 'fds': The FederatedDataset instance used for partitioning.
+    """
+    
     # logging.info(f"Dataset name: {cfg.dname}")
     clients_class = []
     clients_data = []
@@ -400,6 +518,28 @@ def _partition_helper(partitioner, cfg, target_label_col, fetch_only_test_data, 
 
 
 def _dirichlet_data_distribution(cfg, target_label_col, fetch_only_test_data, subtask=None):
+    """
+    Partition the dataset among clients using a Dirichlet distribution.
+
+    Parameters
+    ----------
+    cfg : object
+        Configuration object containing:
+            - num_clients: Number of clients.
+            - dirichlet_alpha: Alpha parameter for the Dirichlet distribution.
+    target_label_col : str
+        Key used for partitioning by label.
+    fetch_only_test_data : bool
+        If True, only test data is processed.
+    subtask : optional
+        A subset indicator for partitioning if needed.
+
+    Returns
+    -------
+    dict
+        A dictionary with keys 'client2data', 'server_data', 'client2class', and 'fds'.
+    """
+    
     partitioner = DirichletPartitioner(
         num_partitions=cfg.num_clients,
         partition_by=target_label_col,
@@ -413,6 +553,31 @@ def _dirichlet_data_distribution(cfg, target_label_col, fetch_only_test_data, su
 
 
 def _sharded_data_distribution(num_classes_per_partition, cfg, target_label_col, fetch_only_test_data, subtask=None):
+    """
+    Partition the dataset among clients using a sharded non-IID distribution.
+
+    This function uses a shard partitioner that assigns a fixed number of classes per client.
+
+    Parameters
+    ----------
+    num_classes_per_partition : int
+        Number of classes that each client should receive.
+    cfg : object
+        Configuration object containing:
+            - num_clients: Number of clients.
+    target_label_col : str
+        The key used for partitioning by label.
+    fetch_only_test_data : bool
+        If True, only test data is processed.
+    subtask : optional
+        A subset indicator for partitioning if needed.
+
+    Returns
+    -------
+    dict
+        A dictionary with keys 'client2data', 'server_data', 'client2class', and 'fds'.
+    """
+    
     partitioner = ShardPartitioner(
         num_partitions=cfg.num_clients,
         partition_by=target_label_col,
@@ -424,6 +589,31 @@ def _sharded_data_distribution(num_classes_per_partition, cfg, target_label_col,
 
 
 def _pathological_partitioner(num_classes_per_partition, cfg, target_label_col, fetch_only_test_data, subtask=None):
+    """
+    Partition the dataset among clients using a pathological (highly non-IID) strategy.
+
+    This function uses a deterministic assignment where each client receives data from a
+    fixed number of classes.
+
+    Parameters
+    ----------
+    num_classes_per_partition : int
+        Number of classes assigned per client.
+    cfg : object
+        Configuration object containing:
+            - num_clients: Number of clients.
+    target_label_col : str
+        The key used for partitioning by label.
+    fetch_only_test_data : bool
+        If True, only test data is processed.
+    subtask : optional
+        A subset indicator for partitioning if needed.
+
+    Returns
+    -------
+    dict
+        A dictionary with keys 'client2data', 'server_data', 'client2class', and 'fds'.
+    """
     partitioner = PathologicalPartitioner(
         num_partitions=cfg.num_clients,
         partition_by=target_label_col,
@@ -435,15 +625,49 @@ def _pathological_partitioner(num_classes_per_partition, cfg, target_label_col, 
 
 
 class ClientsAndServerDatasets:
-    """Prepare the clients and server datasets."""
+    """
+    Prepare and manage the datasets for clients and the server in a federated setting.
+
+    This class initializes the dataset partitioning according to the configuration,
+    sets up the client and server datasets, and provides access to the processed data.
+
+    Attributes
+    ----------
+    cfg : object
+        Configuration object with parameters for data distribution and model settings.
+    data_dist_partitioner_func : function
+        The partitioner function selected based on the distribution type.
+    client2data : dict
+        Mapping of client IDs to their training datasets.
+    server_testdata : Dataset
+        The server's test dataset.
+    client2class : dict
+        Mapping of client IDs to label counts.
+    fds : FederatedDataset
+        The FederatedDataset object used for partitioning.
+    """
 
     def __init__(self, cfg):
+        """
+        Initialize the ClientsAndServerDatasets instance.
+
+        Parameters
+        ----------
+        cfg : object
+            Configuration object with necessary parameters for dataset partitioning.
+        """
         self.cfg = cfg
         self.data_dist_partitioner_func = None
         self._set_distriubtion_partitioner()
         self._setup()
 
     def _set_distriubtion_partitioner(self):
+        """
+        Set the data distribution partitioner function based on the configuration.
+
+        The method selects the partitioner function to use (e.g. Dirichlet, sharded, or pathological)
+        based on cfg.data_dist.dist_type.
+        """        
         if self.cfg.data_dist.dist_type == 'non_iid_dirichlet':
             self.data_dist_partitioner_func = _dirichlet_data_distribution
         elif self.cfg.data_dist.dist_type == 'sharded-non-iid-1':
@@ -469,6 +693,12 @@ class ClientsAndServerDatasets:
                 f"Unknown distribution type: {self.cfg.data_dist.dist}")
 
     def _setup_hugging_dataset(self):
+        """
+        Set up the Hugging Face dataset by partitioning it among clients and the server.
+
+        This method loads the dataset, applies tokenization or transformation (depending on the type),
+        and stores the client and server data along with class distributions.
+        """        
         d = _load_dist_based_clients_server_datasets(
             self.cfg.data_dist, self.data_dist_partitioner_func)
         self.client2data = d["client2data"]
@@ -486,10 +716,24 @@ class ClientsAndServerDatasets:
         logging.info(f"Min data on a client: {min_data}")
 
     def _setup(self):
+        """
+        Setup method to initialize the Hugging Face dataset.
+        """
         self._setup_hugging_dataset()
 
     def get_data(self):
-        """Return the clients and server data for simulation."""
+        """
+        Retrieve the prepared client and server datasets for federated simulation.
+
+        Returns
+        -------
+        dict
+            A dictionary containing:
+                - 'server_testdata': The server's test dataset.
+                - 'client2class': Label count per client.
+                - 'client2data': Client training datasets.
+                - 'fds': The FederatedDataset object used for partitioning.
+        """
         return {
             "server_testdata": self.server_testdata,
             "client2class": self.client2class,

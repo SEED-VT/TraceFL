@@ -9,13 +9,28 @@ import logging
 from diskcache import Index
 from pathlib import Path
 
-# global abc
 abc = 0
 full_abc = ['a', 'b', 'c', 'd', 'e', 'f',
             'g', 'h', 'i', 'j', 'k', 'l', 'm']
 
 
 def _fix_legend(all_axes, fig, bbox_to_anchor=(0.5, 0.3)):
+    """
+    Remove individual legends from all axes and add a common legend to the figure.
+
+    Parameters
+    ----------
+    all_axes : array_like
+        Array of matplotlib Axes objects.
+    fig : matplotlib.figure.Figure
+        The figure object.
+    bbox_to_anchor : tuple, optional
+        The bounding box anchor for the legend (default is (0.5, 0.3)).
+
+    Returns
+    -------
+    None
+    """
     all_axes = all_axes.flatten()
     for ax in all_axes:
         try:
@@ -36,9 +51,20 @@ def _fix_legend(all_axes, fig, bbox_to_anchor=(0.5, 0.3)):
 
 
 def _get_paper_name(name):
+    """
+    Map a model or dataset name to its abbreviated paper name.
 
+    Parameters
+    ----------
+    name : str
+        The original name.
+
+    Returns
+    -------
+    str
+        The abbreviated paper name if found; otherwise, the original name.
+    """
     d = {}
-
     d['openai-community/openai-gpt'] = 'GPT'
     d['openai-communityopenai-gpt'] = 'GPT'
     d['google-bert/bert-base-cased'] = 'BERT'
@@ -53,25 +79,48 @@ def _get_paper_name(name):
     d['organamnist'] = 'Abdominal-CT'
     d['PathologicalPartitioner-3'] = 'Pathological'
     d['non_iid_dirichlet'] = 'Dirichlet'
-
     try:
         return d[name]
     except:
         return name
 
 def smooting_filter(column_values):
-    # return savgol_filter(column_values, window_length=6, polyorder=1)
-    # return moving_average(column_values, window_size=4)
+    """
+    Apply a Gaussian filter to smooth a sequence of values.
+
+    Parameters
+    ----------
+    column_values : array_like
+        Sequence of numeric values to be smoothed.
+
+    Returns
+    -------
+    numpy.ndarray
+        Smoothed values.
+    """
     return gaussian_filter1d(column_values, sigma=2)
 
 
 def get_hashed_name(name, algorithm='md5'):
     """
-    Returns the hash of the given name using the specified algorithm.
+    Compute the hash of a given string using a specified algorithm.
 
-    :param name: The string to be hashed.
-    :param algorithm: The hashing algorithm to use ('md5', 'sha1', 'sha256').
-    :return: The hashed name as a hexadecimal string.
+    Parameters
+    ----------
+    name : str
+        The string to be hashed.
+    algorithm : str, optional
+        The hashing algorithm to use ('md5', 'sha1', or 'sha256'; default is 'md5').
+
+    Returns
+    -------
+    str
+        The hexadecimal hash of the string.
+
+    Raises
+    ------
+    ValueError
+        If an unsupported algorithm is specified.
     """
     # Choose the hashing algorithm
     if algorithm == 'md5':
@@ -90,6 +139,18 @@ def get_hashed_name(name, algorithm='md5'):
 
 
 def convert_cache_to_csv(cache):
+    """
+    Convert cached provenance results to CSV files and log the file paths.
+
+    Parameters
+    ----------
+    cache : diskcache.Index
+        Cache containing provenance results.
+
+    Returns
+    -------
+    None
+    """
     keys = cache.keys()
     csv_paths = []
     for key in keys:
@@ -114,9 +175,6 @@ def convert_cache_to_csv(cache):
 
             for m, v in r2prov['eval_metrics'].items():
                 r2prov[m] = v
-            # if 'avg_prov_time_per_input' in r2prov:
-            #     r2prov['abc_avg_prov_time_per_input'] = r2prov['avg_prov_time_per_input']
-            #     logging.info(f"avg_prov_time_per_input: {r2prov['avg_prov_time_per_input']}")
             each_round_prov_result.append(copy.deepcopy(r2prov))
 
         df = pd.DataFrame(each_round_prov_result)
@@ -138,10 +196,47 @@ def convert_cache_to_csv(cache):
 
 
 def line_plot(axis, x, y, label, linestyle, linewidth=2):
+    """
+    Plot a line on a given axis.
+
+    Parameters
+    ----------
+    axis : matplotlib.axes.Axes
+        The axis to plot on.
+    x : array_like
+        X-axis data.
+    y : array_like
+        Y-axis data.
+    label : str
+        Label for the line.
+    linestyle : str
+        Linestyle for the line.
+    linewidth : float, optional
+        Width of the line (default is 2).
+
+    Returns
+    -------
+    None
+    """
+    
     axis.plot(x, y, label=label, linestyle=linestyle, linewidth=linewidth)
 
 
 def _save_plot(fig, filename_base):
+    """
+    Save a figure in multiple file formats.
+
+    Parameters
+    ----------
+    fig : matplotlib.figure.Figure
+        The figure to save.
+    filename_base : str
+        Base filename for the saved files.
+
+    Returns
+    -------
+    None
+    """
     for ext in ['png', 'svg', 'pdf']:
         directory_path = Path(f"graphs/{ext}s")
         if not directory_path.exists():
@@ -154,12 +249,27 @@ def _save_plot(fig, filename_base):
 
 
 def _call_before_everyPlot(width_inches=3.3374, height_inches=3.3374/1.618, nrows=1, ncols=1, **kwargs):
-    # mpl.use("pgf")
-    # sns.set_theme(
-    #     context="paper", style="ticks", palette="colorblind", font_scale=1, font="serif"
-    # )
+    """
+    Create a figure and axes for plotting.
 
-    # plt.style.use(['science', 'ieee', 'grid', 'no-latex'])
+    Parameters
+    ----------
+    width_inches : float, optional
+        Width of the figure in inches (default is 3.3374).
+    height_inches : float, optional
+        Height of the figure in inches (default is 3.3374/1.618).
+    nrows : int, optional
+        Number of rows in the subplot grid (default is 1).
+    ncols : int, optional
+        Number of columns in the subplot grid (default is 1).
+    **kwargs
+        Additional keyword arguments for plt.subplots.
+
+    Returns
+    -------
+    tuple
+        Tuple containing the figure and axes.
+    """
     fig, axes = None, None
     if nrows != -1 and ncols != -1:
         fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(
@@ -172,18 +282,17 @@ def _call_before_everyPlot(width_inches=3.3374, height_inches=3.3374/1.618, nrow
 
 
 def _plot_label_distribution_motivation():
-    # df = pd.read_csv(
-    #     'results_csvs/label_distribution_proper_labels_without_flip_pathmnist.csv', index_col=0)
-    # print(df)
+    """
+    Plot the label distribution for motivation purposes.
 
-    # fig, ax = _call_before_everyPlot(
-    #     width_inches=3.3374*1.6, height_inches=3.3374/1.618, nrows=1, ncols=1)
-    # sns.heatmap(df, annot=True, fmt="d",  cmap='Blues',  linewidths=.5)
+    Parameters
+    ----------
+    None
 
-    # plt.xlabel('Hospital ID')
-    # plt.ylabel('Medical Imaging Label')
-    # plt.tight_layout()
-    # _save_plot(fig, f"label_distribution_proper_labels_without_flip_pathmnist")
+    Returns
+    -------
+    None
+    """
 
     def plot_partition_labels_distribution():
         # Dataset provided by the user
@@ -236,9 +345,18 @@ def _plot_label_distribution_motivation():
 
 
 def _plot_text_image_audio_classification_results():
-    # from scipy.interpolate import UnivariateSplin
-    # prov_image_classification_exp-resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients100-fedavg-(R10-clientsPerR10)-non_iid_dirichlet0.1-batch32-epochs2-lr0.001
-    # results_csvs/prov_image_classification_exp-resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients100-fedavg-(R10-clientsPerR10)-non_iid_dirichlet0.1-batch32-epochs2-lr0.001.csv
+    """
+    Plot classification results for text, image, and audio modalities.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    dict
+        Dictionary containing metrics for the plotted results.
+    """
     def _getdf(mname, dname, alpha, trounds):
         fname = f'results_csvs/prov_image_classification_exp-{mname}-{dname}-faulty_clients[[]]-noise_rateNone-TClients100-fedavg-(R{trounds}-clientsPerR10)-non_iid_dirichlet{alpha}-batch32-epochs2-lr0.001.csv'
         return pd.read_csv(fname)
@@ -330,6 +448,18 @@ def _plot_text_image_audio_classification_results():
 
 
 def _table_and_graph_scalability_results():
+    """
+    Generate tables and plots for scalability results.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    dict
+        Dictionary containing overall scalability metrics.
+    """
     def _get_df_scaling_clients(num_clients):
         fname = f'results_csvs/prov_Scaling-openai-communityopenai-gpt-dbpedia_14-faulty_clients[[]]-noise_rateNone-TClients{num_clients}-fedavg-(R15-clientsPerR10)-non_iid_dirichlet0.3-batch32-epochs2-lr0.001.csv'
         return pd.read_csv(fname)
@@ -455,7 +585,6 @@ def _table_and_graph_scalability_results():
     logging.info(
         f"-------------- Scalability Number of Rounds 80 --------------")
 
-    total_rounds_num_rounds_80 = 80
     total_model_trained_rounds_80 = 80 * 10
     num_rounds_exp = 80
     df = _get_df_num_rounds()
@@ -488,6 +617,18 @@ def _table_and_graph_scalability_results():
 
 
 def _plot_differential_privacy_results():
+    """
+    Plot results for differential privacy experiments and generate a results table.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    dict
+        Dictionary containing overall differential privacy experiment metrics.
+    """
     def _get_avg_prov_and_max_acc_differential_privacy(dclip, alpha):
         all_dfs = [_get_df_gpt(noise=ds, clip=dclip, alpha=alpha)
                    for ds in dp_noises]
@@ -519,18 +660,10 @@ def _plot_differential_privacy_results():
         width_inches=3.3374*1.3, height_inches=3.3374/1.718, nrows=1, ncols=1, sharey=True)
 
     temp_dict1 = _plot(all_axes, 50, alpha_for_dp_exp)
-    # _plot(all_axes[1], dp_clip[1], alpha_for_dp_exp)
 
     fig.supylabel('Accuracy (%)')
 
     all_axes = all_axes
-
-    # for ax in all_axes:
-    #     try:
-    #         ax.get_legend().remove()
-    #     except:
-    #         pass
-
     all_axes.get_legend().remove()
 
     # Create a common legend
@@ -595,7 +728,18 @@ def _plot_differential_privacy_results():
 
 
 def _plot_dirchlet_alpha_vs_accuracy():
+    """
+    Plot the relationship between Dirichlet alpha and accuracy.
 
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    dict
+        Dictionary containing aggregated metrics across different alphas.
+    """
     def _getdf(mname, dname, alpha):
         fname = f'results_csvs/prov_Dirichlet-Alpha-{mname}-{dname}-faulty_clients[[]]-noise_rateNone-TClients100-fedavg-(R15-clientsPerR10)-non_iid_dirichlet{alpha}-batch32-epochs2-lr0.001.csv'
         return pd.read_csv(fname)
@@ -632,8 +776,6 @@ def _plot_dirchlet_alpha_vs_accuracy():
 
     width = 3.3374*1.6
     height = 3.3374 * 1.5
-    # width = 3.3374 * 1.6
-    # height = 3.3374/1.618
     all_alphas = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
     fig, axes = _call_before_everyPlot(
         width_inches=width, height_inches=height, nrows=3, ncols=2, sharey=True)
@@ -673,7 +815,22 @@ def _plot_dirchlet_alpha_vs_accuracy():
 
 # =================================== The Above Plotting Are Finalized ==============================================================
 def plot_label_distribution_heatmap_concrete(client2class, labelid2labelname, fname_type):
-    # Identifying all labels and sorting client IDs
+    """
+    Plot heatmaps of label distribution using concrete labels and numeric labels.
+
+    Parameters
+    ----------
+    client2class : dict
+        Dictionary mapping client IDs to class distributions.
+    labelid2labelname : dict or None
+        Dictionary mapping label IDs to label names. If None, numeric labels are used.
+    fname_type : str
+        Suffix for the saved filename.
+
+    Returns
+    -------
+    None
+    """    
     all_labels = set()
     for class_data in client2class.values():
         all_labels.update(class_data.keys())
@@ -694,8 +851,6 @@ def plot_label_distribution_heatmap_concrete(client2class, labelid2labelname, fn
     df2 = pd.DataFrame(data_matrix, index=[
                        labelid2labelname[label] for label in all_labels], columns=client_ids)
 
-    # df2.to_csv(
-    #     f'results_csvs/label_distribution_proper_labels_{fname_type}.csv')
 
     print(f'dataframe: \n{df2}')
     print(f'dataframe: \n{df1}')
@@ -707,7 +862,6 @@ def plot_label_distribution_heatmap_concrete(client2class, labelid2labelname, fn
     plt.xlabel('Hospital ID')
     plt.ylabel('Medical Imaging Label')
     plt.tight_layout()
-    # _save_plot(fig, f"label_distribution_proper_labels_{fname_type}")
 
     fig, ax = _call_before_everyPlot(
         width_inches=3.3374*1.6, height_inches=3.3374/1.618, nrows=1, ncols=1)
@@ -716,23 +870,43 @@ def plot_label_distribution_heatmap_concrete(client2class, labelid2labelname, fn
     plt.xlabel('Hospital ID')
     plt.ylabel('Medical Imaging Label')
     plt.tight_layout()
-    # _save_plot(fig, f"label_distribution_numeric_labels_{fname_type}")
-
-
-#
 
 
 def plot_label_distribution(client2class, labelid2labelname, fname_type):
-    # client2class = {f'H{k}':v for k, v in client2class.items()}
+    """
+    Plot label distribution by generating heatmaps for client class distributions.
+
+    Parameters
+    ----------
+    client2class : dict
+        Dictionary mapping client IDs to class distributions.
+    labelid2labelname : dict or None
+        Dictionary mapping label IDs to label names.
+    fname_type : str
+        Suffix for the saved filename.
+
+    Returns
+    -------
+    None
+    """
     client2class = {f'H{k}': v for k, v in client2class.items()}
     plot_label_distribution_heatmap_concrete(
         client2class=client2class, labelid2labelname=labelid2labelname, fname_type=fname_type)
 
-    # _save_plot(fig, "label_distribution")
 
 
 def _plot_motivation_example_tracefl_output():
+    """
+    Plot motivation examples of TraceFL output as heatmaps.
 
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
     def _plot(plot_dict, ax, title):
         plot_dict = {k.replace('c', 'H'): v for k, v in plot_dict.items()}
         df = pd.DataFrame([plot_dict])
@@ -760,7 +934,6 @@ def _plot_motivation_example_tracefl_output():
     _plot(
         d4, axes[3], 'd) TraceFL output on test image four (Cancer-associated Stroma).')
 
-    # set x label using figure
     fig.supxlabel('Hospital ID', fontsize=10)
 
     plt.tight_layout()
@@ -768,6 +941,17 @@ def _plot_motivation_example_tracefl_output():
 
 
 def _plot_table_fed_debug_comparison() -> None:
+    """
+    Generate a table and graphs comparing FedDebug and TraceFL performance.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
     def _read_df(start_key, mname, dname, faulty_cleint_id, label2flip, data_dist, alpha=None):
         fname = f'results_csvs/prov_{start_key}-{mname}-{dname}-faulty_clients[[{faulty_cleint_id}]]-noise_rate{label2flip}-TClients10-fedavg-(R15-clientsPerR10)-{data_dist}{alpha}-batch32-epochs2-lr0.001.csv'
         if len(fname) > 250:
@@ -843,8 +1027,17 @@ def _plot_table_fed_debug_comparison() -> None:
 
 
 def _plot_overhead():
+    """
+    Plot a comparison of average FedDebug time and TraceFL time across different model-dataset pairs.
 
-    # Create the DataFrame
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
     data = {
         "Model-Dataset": [
             "Abdominal-CT", "Colon-Pathology", "CIFAR10",
@@ -853,19 +1046,13 @@ def _plot_overhead():
         "Avg. FedDebug Time (s)": [1.065782728, 1.032155128, 1.099321423, 1.136827763, 0, 0],
         "Avg. TraceFL Time (s)": [3.863399574, 3.904629768, 4.61762392, 4.898141942, 2.699528438, 2.634212631]
     }
-
     df = pd.DataFrame(data)
-
-    # Plotting the bar plot
-    # plt.figure(figsize=(10, 6))
     fig, ax = _call_before_everyPlot(
         width_inches=3.3374*1.12, height_inches=3.3374/1.4, nrows=1, ncols=1)
 
     sns.barplot(y="value", x="Model-Dataset", hue="variable",
                 data=pd.melt(df, id_vars=["Model-Dataset"]), palette="viridis")
 
-    # plt.yticks(rotation=0)
-    # plt.title("Comparison of Avg. FedDebug Time and Avg. TraceFL Time across Model-Datasets")
     plt.xticks(rotation=45, ha="right")
     plt.ylabel("Avg. Time (s)")
     plt.xlabel("Model-Dataset")
@@ -878,17 +1065,24 @@ def _plot_overhead():
                borderpad=0.1,
                labelspacing=0.1,)
 
-    # plt.tight_layout()
 
     plt.tight_layout()
     plt.xlabel("")
-    # plt.show()
     _save_plot(fig, "overhead_comparison")
 
 
 def do_plotting():
+    """
+    Execute all plotting functions to generate experiment result graphs and tables.
 
-    # todo
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """
     logging.info(
         '======================== Section Correct Predictions ========================')
     r1 = _plot_text_image_audio_classification_results()
@@ -909,15 +1103,6 @@ def do_plotting():
     logging.info(
         '======================== Section Incorrect Predictions and Comparison With FedDebug ========================')
     r3 = _plot_table_fed_debug_comparison()
-
-    # total_rounds_sec2_plus_sect_1 = r3['Total Rounds'] + total_rounds_sec1
-    # total_accuracy_sec2_plus_sect_1 = r3['Total Accuracy'] + total_accuracy_sec1
-    # average_accuracy_sec2_plus_sect_1 = total_accuracy_sec2_plus_sect_1 / total_rounds_sec2_plus_sect_1
-    # total_model_trained_sec2_plus_sect_1 = r3['Total Models Trained'] + total_model_trained_sec1
-    # logging.info(f"The total rounds in section 2 and 1 is {total_rounds_sec2_plus_sect_1}")
-    # logging.info(f"Total Accuracy Sec2+Sec1: {total_accuracy_sec2_plus_sect_1}")
-    # logging.info(f"Average Accuracy Sec2+Sec1: {average_accuracy_sec2_plus_sect_1}")
-    # logging.info(f'Total Models Trained Sec2+Sec1:  {total_model_trained_sec2_plus_sect_1}')
 
     logging.info(
         '======================== Section Dirichlet Alpha vs Accuracy ========================')
@@ -957,6 +1142,19 @@ def do_plotting():
 
 
 def get_experiment_results_as_dataframe(cfg):
+    """
+    Retrieve experiment results from the cache and convert them to a pandas DataFrame.
+
+    Parameters
+    ----------
+    cfg : object
+        Configuration object containing experiment key and storage settings.
+
+    Returns
+    -------
+    pandas.DataFrame
+        DataFrame containing experiment results.
+    """
     key = cfg.exp_key
     cache = Index(cfg.storage.dir + cfg.storage.results_cache_name)
     round2prov_result = cache[key]["round2prov_result"]
@@ -979,9 +1177,6 @@ def get_experiment_results_as_dataframe(cfg):
 
         for m, v in r2prov['eval_metrics'].items():
             r2prov[m] = v
-        # if 'avg_prov_time_per_input' in r2prov:
-        #     r2prov['abc_avg_prov_time_per_input'] = r2prov['avg_prov_time_per_input']
-        #     logging.info(f"avg_prov_time_per_input: {r2prov['avg_prov_time_per_input']}")
         each_round_prov_result.append(copy.deepcopy(r2prov))
 
     df = pd.DataFrame(each_round_prov_result)
@@ -989,6 +1184,18 @@ def get_experiment_results_as_dataframe(cfg):
 
 
 def feddebug_comparison_table(cfg):
+    """
+    Generate a comparison table between FedDebug and TraceFL results and save it as LaTeX.
+
+    Parameters
+    ----------
+    cfg : object
+        Configuration object containing experiment settings.
+
+    Returns
+    -------
+    None
+    """
     def _get_table_dict_dirichlet(df, alpha):
         mname = _get_paper_name(df['Model'][0])
         dname = _get_paper_name(df['Dataset'][0])
@@ -1008,19 +1215,19 @@ def feddebug_comparison_table(cfg):
 
 
 
-def _temp_save(filename_base):
-    for ext in ['png', 'svg', 'pdf']:
-        directory_path = Path(f"graphs/{ext}s")
-        if not directory_path.exists():
-            directory_path.mkdir(parents=True, exist_ok=True)
-            print(f"Directory '{directory_path}' created.")
-        plt.savefig(f"graphs/{ext}s/{filename_base}.{ext}",
-                    bbox_inches='tight', format=ext, dpi=600)
-
-    plt.close('all')
-
-
 def plot_tracefl_configuration_results(cfg):
+    """
+    Plot the TraceFL configuration results based on experiment data.
+
+    Parameters
+    ----------
+    cfg : object
+        Configuration object containing experiment key and storage settings.
+
+    Returns
+    -------
+    None
+    """
     def _plot(ax):
         df = get_experiment_results_as_dataframe(cfg)
         model = _get_paper_name(df['Model'][0])

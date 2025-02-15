@@ -7,21 +7,35 @@ the python code at all
 """
 
 import gc
-
 import torch
 import torchvision
 from torch.utils.data import DataLoader
 import evaluate
-from transformers import TrainingArguments, Trainer
 import numpy as np
 import evaluate
 import logging
-from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer,  AutoTokenizer
-from transformers import DefaultDataCollator
+from transformers import DefaultDataCollator, AutoModelForSequenceClassification, TrainingArguments, Trainer,  AutoTokenizer, TrainingArguments, Trainer
 
 
 class CNNTrainer(Trainer):
     def compute_loss(self, model, inputs, return_outputs=False):
+        """
+        Compute the loss for the given model and inputs.
+
+        Parameters
+        ----------
+        model : torch.nn.Module
+            The model to compute loss for.
+        inputs : dict
+            A dictionary containing the input tensors. Expected keys are "pixel_values" and "labels".
+        return_outputs : bool, optional
+            Whether to return the model outputs along with the loss (default is False).
+
+        Returns
+        -------
+        torch.Tensor or tuple
+            The computed loss if return_outputs is False; otherwise, a tuple (loss, outputs).
+        """
         labels = inputs.get("labels")
         batch_inputs = inputs.get("pixel_values")
         outputs = model(batch_inputs)
@@ -31,6 +45,25 @@ class CNNTrainer(Trainer):
         return (loss, outputs) if return_outputs else loss
 
     def prediction_step(self, model, inputs, prediction_loss_only, ignore_keys=None):
+        """
+        Perform a prediction step on the given inputs.
+
+        Parameters
+        ----------
+        model : torch.nn.Module
+            The model used for prediction.
+        inputs : dict
+            A dictionary containing the input tensors.
+        prediction_loss_only : bool
+            If True, only the loss is returned.
+        ignore_keys : list, optional
+            A list of keys to ignore in the outputs (default is None).
+
+        Returns
+        -------
+        tuple
+            A tuple containing (loss, logits, labels). If prediction_loss_only is True, returns (loss, None, None).
+        """
         loss = None
         labels = None
         logits = None
@@ -46,6 +79,19 @@ class CNNTrainer(Trainer):
 
 
 def _compute_metrics(eval_pred):
+    """
+    Compute evaluation metrics from predictions and labels.
+
+    Parameters
+    ----------
+    eval_pred : tuple
+        A tuple (logits, labels) from the evaluation.
+
+    Returns
+    -------
+    dict
+        A dictionary containing accuracy, correct_indices, actual_labels, incorrect_indices, and predicted_labels.
+    """
     metric = evaluate.load("accuracy")
     logits, labels = eval_pred
     predictions = np.argmax(logits, axis=-1)
@@ -69,6 +115,19 @@ def _compute_metrics(eval_pred):
 
 
 def _get_inputs_labels_from_batch(batch):
+    """
+    Extract input data and labels from a batch.
+
+    Parameters
+    ----------
+    batch : dict or tuple
+        A batch containing the data. If a dict, expected keys are "pixel_values" and "label". Otherwise, a tuple (inputs, labels).
+
+    Returns
+    -------
+    tuple
+        A tuple (inputs, labels).
+    """
     if "pixel_values" in batch:
         return batch["pixel_values"], batch["label"]
     else:
@@ -77,9 +136,28 @@ def _get_inputs_labels_from_batch(batch):
 
 
 def initialize_model(name, cfg_dataset):
-    """Initialize the model with the given name."""
-    model_dict = {"model": None, "num_classes": cfg_dataset.num_classes}
+    """
+    Initialize and configure the model based on its name and dataset configuration.
 
+    Parameters
+    ----------
+    name : str
+        The name or identifier of the model.
+    cfg_dataset : object
+        Configuration object for the dataset. Must contain attribute num_classes and channels.
+
+    Returns
+    -------
+    dict
+        A dictionary containing:
+            - "model": The initialized model.
+            - "num_classes": Number of classes in the dataset.
+    Raises
+    ------
+    ValueError
+        If the specified model name is not supported.
+    """
+    model_dict = {"model": None, "num_classes": cfg_dataset.num_classes}
     if name in ['squeezebert/squeezebert-uncased', 'openai-community/openai-gpt', "Intel/dynamic_tinybert", "google-bert/bert-base-cased", 'microsoft/MiniLM-L12-H384-uncased', 'distilbert/distilbert-base-uncased']:
         model = AutoModelForSequenceClassification.from_pretrained(
             pretrained_model_name_or_path=name, num_labels=cfg_dataset.num_classes,
@@ -143,7 +221,25 @@ def initialize_model(name, cfg_dataset):
 
 
 def _train_cnn(tconfig):
-    """Train the network on the training set."""
+    """
+    Train a CNN model on the training dataset.
+
+    Parameters
+    ----------
+    tconfig : dict
+        A dictionary containing training configuration, including:
+            - "train_data": Training dataset.
+            - "batch_size": Batch size for training.
+            - "model_dict": Dictionary with the model under the key "model".
+            - "lr": Learning rate.
+            - "epochs": Number of training epochs.
+            - "device": Device to run training on.
+
+    Returns
+    -------
+    dict
+        A dictionary containing training loss ("train_loss") and training accuracy ("train_accuracy").
+    """
     trainloader = DataLoader(
         tconfig["train_data"], batch_size=tconfig["batch_size"])
     net = tconfig["model_dict"]["model"]
@@ -180,7 +276,23 @@ def _train_cnn(tconfig):
 
 
 def _test_cnn(net, test_data, device):
-    """Evaluate the network on the entire test set."""
+    """
+    Evaluate a CNN model on the test dataset.
+
+    Parameters
+    ----------
+    net : torch.nn.Module
+        The CNN model to be evaluated.
+    test_data : object
+        The test dataset.
+    device : str
+        The device on which evaluation is performed.
+
+    Returns
+    -------
+    dict
+        A dictionary containing evaluation loss ("eval_loss") and evaluation accuracy ("eval_accuracy").
+    """
     testloader = torch.utils.data.DataLoader(
         test_data, batch_size=512, shuffle=False, num_workers=4
     )
@@ -207,6 +319,23 @@ def _test_cnn(net, test_data, device):
 
 
 def _test_cnn_hf_trainer(gm_dict, central_server_test_data, batch_size):
+    """
+    Evaluate a CNN model using the HuggingFace Trainer on the test dataset.
+
+    Parameters
+    ----------
+    gm_dict : dict
+        Dictionary containing the global model under the key "model".
+    central_server_test_data : object
+        The test dataset.
+    batch_size : int
+        Batch size for evaluation.
+
+    Returns
+    -------
+    dict
+        A dictionary containing evaluation metrics as returned by the trainer.
+    """
     net = gm_dict['model']
     logging.debug("Evaluating cnn model")
     testing_args = TrainingArguments(
@@ -239,8 +368,24 @@ def _test_cnn_hf_trainer(gm_dict, central_server_test_data, batch_size):
 
 
 def _train_transformer(tconfig):
-    """Train the transformer model."""
+    """
+    Train a transformer model on the training dataset.
 
+    Parameters
+    ----------
+    tconfig : dict
+        A dictionary containing training configuration, including:
+            - "model_dict": Dictionary with the model under the key "model".
+            - "device": Device to run training on.
+            - "epochs": Number of training epochs.
+            - "batch_size": Batch size for training.
+            - "train_data": Training dataset.
+
+    Returns
+    -------
+    dict
+        A dictionary containing training loss ("train_loss") and training accuracy ("train_accuracy").
+    """
     model_dict = tconfig["model_dict"]
     net = model_dict["model"]
     net = net.to(tconfig["device"])
@@ -272,6 +417,22 @@ def _train_transformer(tconfig):
 
 
 def _test_transformer_model(args):
+    """
+    Evaluate a transformer model on the test dataset.
+
+    Parameters
+    ----------
+    args : dict
+        A dictionary containing:
+            - "model_dict": Dictionary with the model under the key "model".
+            - "test_data": The test dataset.
+            - "batch_size": Batch size for evaluation.
+
+    Returns
+    -------
+    dict
+        A dictionary containing evaluation metrics as returned by the trainer.
+    """
     logging.debug("Evaluating transformer model")
     model_dict, central_server_test_data, batch_size = args[
         "model_dict"], args["test_data"], args["batch_size"]
@@ -293,7 +454,25 @@ def _test_transformer_model(args):
 
 
 def global_model_eval(arch, global_net_dict, server_testdata, batch_size=32):
-    """Evaluate the global model on the server test data."""
+    """
+    Evaluate the global model on the server test data.
+
+    Parameters
+    ----------
+    arch : str
+        The architecture type ("cnn" or "transformer").
+    global_net_dict : dict
+        Dictionary containing the global model.
+    server_testdata : object
+        The test dataset.
+    batch_size : int, optional
+        Batch size for evaluation (default is 32).
+
+    Returns
+    -------
+    dict
+        A dictionary with keys "loss" and "accuracy" representing evaluation metrics.
+    """
     d = {}
     if arch == "cnn":
         d = _test_cnn(global_net_dict["model"],
@@ -309,7 +488,29 @@ def global_model_eval(arch, global_net_dict, server_testdata, batch_size=32):
 
 
 def test_neural_network(arch, global_net_dict, server_testdata, batch_size=32):
-    """Evaluate the global model on the server test data."""
+    """
+    Evaluate the global model on the server test data using the appropriate method.
+
+    Parameters
+    ----------
+    arch : str
+        The architecture type ("cnn" or "transformer").
+    global_net_dict : dict
+        Dictionary containing the global model.
+    server_testdata : object
+        The test dataset.
+    batch_size : int, optional
+        Batch size for evaluation (default is 32).
+
+    Returns
+    -------
+    dict
+        A dictionary with evaluation loss and accuracy.
+    Raises
+    ------
+    ValueError
+        If the specified architecture is not supported.
+    """
     d = {}
     if arch == "cnn":
         d = _test_cnn_hf_trainer(
@@ -329,7 +530,23 @@ def test_neural_network(arch, global_net_dict, server_testdata, batch_size=32):
 
 
 def train_neural_network(tconfig):
-    """Train the neural network."""
+    """
+    Train a neural network based on the specified architecture.
+
+    Parameters
+    ----------
+    tconfig : dict
+        A dictionary containing training configuration, including the key "arch" to determine the model type.
+
+    Returns
+    -------
+    dict
+        A dictionary containing training loss and training accuracy.
+    Raises
+    ------
+    ValueError
+        If the specified architecture is not supported.
+    """
     train_dict = {}
     if tconfig["arch"] == "cnn":
         train_dict = _train_cnn(tconfig)

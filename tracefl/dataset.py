@@ -9,50 +9,51 @@ partitioned, please include all those functions and logic in the
 defined here of course.
 """
 
-
-
-
-
 import logging
-from tracefl.dataset_preparation import ClientsAndServerDatasets, getLabelsCount
+from tracefl.dataset_preparation import ClientsAndServerDatasets
 from diskcache import Index
-from flwr_datasets.visualization import plot_label_distributions
-import matplotlib.pyplot as plt
-import numpy as np
-import collections
-
-
 
 def mdedical_dataset2labels(dname):
+    """
+    Retrieve the mapping of class indices to label names for a given dataset.
+
+    Parameters
+    ----------
+    dname : str
+        The name of the dataset for which the label mapping is requested.
+
+    Returns
+    -------
+    dict or None
+        A dictionary mapping integer class indices to string labels if `dname` is recognized.
+        Returns None if the dataset name is not recognized.
+    """
     if dname == 'pathmnist':
         return {0: 'Adipose', 1: 'Background', 2: 'Debris', 3: 'Lymphocytes', 4: 'Mucus', 5: 'Smooth Muscle', 6: 'Normal Colon Mucosa', 7: 'Cancer-associated Stroma', 8: 'Colorectal Adenocarcinoma'}
     else:
-        # raise ValueError(f"Unknown dataset {dname}") 
         return None
 
-
-
-
-def _save_graph_of_data_distribution(fds, fname, target_label_col= 'label') -> None:
-    partitioner = fds.partitioners["train"]
-    fig, ax, df = plot_label_distributions(
-        partitioner,
-        label_name=target_label_col,
-        plot_type="heatmap",
-        size_unit="absolute",
-        partition_id_axis="x",
-        legend=True,
-        verbose_labels=True,
-        title="Per Partition Labels Distribution",
-        plot_kwargs={"annot": True},
-    )
-    print(df)
-    plt.savefig(f"{fname}.png")
-    plt.close()
-    df.to_csv(f"{fname}.csv")
-
-
 def get_clients_server_data(cfg):
+    """
+    Obtain and cache datasets for clients and server based on the provided configuration.
+
+    This function checks for an existing dataset in the cache using a unique key derived
+    from the configuration. If the dataset is present in the cache and caching is enabled,
+    it loads the dataset from the cache. Otherwise, it creates the dataset using
+    `ClientsAndServerDatasets`, caches it, and then returns it.
+
+    Parameters
+    ----------
+    cfg : object
+        A configuration object that must contain attributes for storage paths and data
+        distribution parameters, as well as a flag to check the dataset cache.
+
+    Returns
+    -------
+    dict
+        A dictionary containing the datasets for both clients and server.
+    """
+    
     ds_dict = {}
     cache_path = cfg.storage.dir + cfg.storage.fl_datasets_cache
     cache = Index(cache_path)
@@ -71,22 +72,59 @@ def get_clients_server_data(cfg):
         cache[dataset_key] = ds_dict
         logging.info(f"Saving dataset to cache {cache_path}: {dataset_key}")
     
-    # _save_graph_of_data_distribution(ds_dict['fds'],fname= f"graphs/temp/{sanitize_filename(dataset_key)}")
     return ds_dict
 
 
 def load_central_server_test_data(cfg):
-    """Load the central server test data."""
+    """
+    Load the test data intended for the central server.
+
+    This function retrieves the complete dataset using `ClientsAndServerDatasets`
+    and then extracts the subset corresponding to the server's test data.
+
+    Parameters
+    ----------
+    cfg : object
+        A configuration object required to initialize the dataset creation process.
+
+    Returns
+    -------
+    object
+        The test dataset for the central server.
+    """
     d_obj = ClientsAndServerDatasets(cfg).get_data()
     return d_obj["server_testdata"]
 
 
-
-
-
-
 def convert_client2_faulty_client(ds, label2flip, target_label_col= 'label'):
+    """
+    Transform a client's dataset to simulate a faulty client by flipping specified labels.
 
+    This function iterates over the dataset, and for each example, if the label (accessed
+    via the `target_label_col` key) exists in the `label2flip` mapping, the label is replaced
+    by its corresponding flipped value. The function also counts the occurrences of each label
+    after the transformation.
+
+    Parameters
+    ----------
+    ds : Dataset
+        The dataset to be modified. It is expected to support the `map` method and iteration,
+        and its elements must be mutable mappings containing at least the key specified by
+        `target_label_col`.
+    label2flip : dict
+        A dictionary mapping original label values to the flipped label values.
+    target_label_col : str, optional
+        The key in each example dict corresponding to the target label. Default is 'label'.
+
+    Returns
+    -------
+    dict
+        A dictionary with the following keys:
+        
+        - 'ds': The transformed dataset with flipped labels.
+        - 'label2count': A dictionary mapping each label to the count of its occurrences
+          in the transformed dataset.
+    """
     def flip_label(example):
         label = None
         try:
@@ -97,23 +135,13 @@ def convert_client2_faulty_client(ds, label2flip, target_label_col= 'label'):
             example[target_label_col] = label2flip[label]  
         return example
     
-    
-
     ds =  ds.map(flip_label).with_format("torch")
-
     label2count = {}
 
     for example in ds:
         label = example[target_label_col].item()
-        # print(f'---> label {label}')
         if label not in label2count:
             label2count[label] = 0
         label2count[label] += 1
 
     return {'ds': ds, 'label2count' : label2count}
-
-
-
-
-
-

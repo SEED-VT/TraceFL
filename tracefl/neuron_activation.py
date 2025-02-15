@@ -5,6 +5,19 @@ import torch.nn.functional as F
 
 
 def _get_all_layers_in_neural_network(net):
+    """
+    Retrieve all layers of the neural network that are either Conv2d or Linear.
+
+    Parameters
+    ----------
+    net : torch.nn.Module
+        The neural network model.
+
+    Returns
+    -------
+    list
+        A list of layers (torch.nn.Module) that are either Conv2d or Linear.
+    """
     layers = []
     for layer in net.children():
         if len(list(layer.children())) == 0 and (
@@ -22,6 +35,22 @@ Hooks_Storage = []
 
 
 def _get_input_and_output_of_layer(self, input_t, output_t):
+    """
+    Capture and store the output of a layer during the forward pass.
+
+    Parameters
+    ----------
+    self : torch.nn.Module
+        The layer for which the hook is registered.
+    input_t : tuple
+        The input tensor(s) provided to the layer.
+    output_t : torch.Tensor
+        The output tensor produced by the layer.
+
+    Returns
+    -------
+    None
+    """
     global Hooks_Storage
     assert (
         len(input_t) == 1
@@ -30,6 +59,19 @@ def _get_input_and_output_of_layer(self, input_t, output_t):
 
 
 def _insert_hooks_func(layers):
+    """
+    Insert forward hooks into the specified layers.
+
+    Parameters
+    ----------
+    layers : list
+        A list of layers (torch.nn.Module) into which hooks will be inserted.
+
+    Returns
+    -------
+    list
+        A list of hook handles.
+    """
     all_hooks = []
     for layer in layers:
         h = layer.register_forward_hook(_get_input_and_output_of_layer)
@@ -38,12 +80,46 @@ def _insert_hooks_func(layers):
 
 
 def _scale_func(out, rmax=1, rmin=0):
+    """
+    Scale the output tensor to a specified range.
+
+    Parameters
+    ----------
+    out : torch.Tensor
+        The tensor to be scaled.
+    rmax : float, optional
+        The maximum value of the scaled range (default is 1).
+    rmin : float, optional
+        The minimum value of the scaled range (default is 0).
+
+    Returns
+    -------
+    torch.Tensor
+        The scaled tensor.
+    """
     output_std = (out - out.min()) / (out.max() - out.min())
     output_scaled = output_std * (rmax - rmin) + rmin
     return output_scaled
 
 
 def _my_eval_neurons_activations(model, x):
+    """
+    Evaluate the neuron activations of the model for a given input.
+
+    Parameters
+    ----------
+    model : torch.nn.Module
+        The neural network model.
+    x : torch.Tensor
+        The input tensor.
+
+    Returns
+    -------
+    tuple
+        A tuple containing:
+            - A 1D tensor of concatenated flattened activations from all layers.
+            - A list of tensors with the activations of each layer.
+    """
     global Hooks_Storage
     layer2output = []
     all_layers = _get_all_layers_in_neural_network(model)
@@ -63,6 +139,22 @@ def _my_eval_neurons_activations(model, x):
 
 
 def get_neurons_activations(model, img):
-    """Return the activations of all neurons in the model for the given input image."""
+    """
+    Get the activations of all neurons in the model for the given input image.
+
+    Parameters
+    ----------
+    model : torch.nn.Module
+        The neural network model.
+    img : torch.Tensor
+        The input image tensor.
+
+    Returns
+    -------
+    tuple
+        A tuple containing:
+            - A 1D tensor of concatenated flattened activations from all layers.
+            - A list of tensors with the activations of each layer.
+    """
     r = _my_eval_neurons_activations(model, img)
     return r

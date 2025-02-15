@@ -4,19 +4,30 @@ They are not directly relevant to  the other (more FL specific) python modules. 
 example, you may define here things like: loading a model from a checkpoint, saving
 results, plotting.
 """
-
-
 from sklearn import metrics
 import numpy as np
 
 
-def get_backend_config(cfg): 
+def get_backend_config(cfg):
+    """
+    Compute the backend configuration for the federated learning simulation.
 
+    Parameters
+    ----------
+    cfg : object
+        Configuration object containing resource specifications (e.g., client_resources, device, total_cpus, total_gpus).
+
+    Returns
+    -------
+    dict
+        A dictionary with keys:
+        - "client_resources": dict, resources allocated per client.
+        - "init_args": dict, initialization arguments for the backend.
+    """
     client_resources = {"num_cpus": cfg.client_resources.cpus}
     if cfg.device == "cuda":
         client_resources['num_gpus'] = cfg.client_resources.gpus 
             
-
     backend_config = {
         "client_resources": client_resources,
         "init_args": {"num_cpus": cfg.total_cpus,
@@ -25,16 +36,48 @@ def get_backend_config(cfg):
     return backend_config
 
 
-
 def compute_importance(n_elements, decay_factor=0.9):
-    # Generate indices for the elements
+    """
+    Compute importance weights for a sequence of elements using a decay factor.
+
+    Parameters
+    ----------
+    n_elements : int
+        The number of elements for which importance is computed.
+    decay_factor : float, optional
+        The decay factor used to compute importance (default is 0.9).
+
+    Returns
+    -------
+    list of float
+        A list of importance weights for the elements.
+    """
     indices = np.arange(n_elements)
     importance = decay_factor ** indices[::-1]
     return importance.tolist()
 
 
 def set_exp_key(cfg):
+    """
+    Generate a unique experiment key based on the configuration settings.
 
+    Parameters
+    ----------
+    cfg : object
+        Configuration object containing experiment parameters such as noise_multiplier, clipping_norm,
+        model name, dataset name, faulty_clients_ids, noise_rate, number of clients, strategy, data distribution,
+        batch size, epochs, and learning rate.
+
+    Returns
+    -------
+    str
+        A unique experiment key string.
+
+    Raises
+    ------
+    ValueError
+        If the configuration is invalid.
+    """
     if cfg.noise_multiplier == -1 and cfg.clipping_norm == -1:
 
         key = (f"{cfg.exp_key}-"
@@ -67,10 +110,22 @@ def set_exp_key(cfg):
 
 
 def get_prov_eval_metrics(labels, predicted_labels):
-    
-    accuracy = metrics.accuracy_score(labels, predicted_labels)
-    
+    """
+    Compute evaluation metrics for provenance by comparing true and predicted labels.
 
+    Parameters
+    ----------
+    labels : array-like
+        True labels.
+    predicted_labels : array-like
+        Predicted labels.
+
+    Returns
+    -------
+    dict
+        A dictionary containing evaluation metrics such as "Accuracy".
+    """
+    accuracy = metrics.accuracy_score(labels, predicted_labels)
     answer = {    
         "Accuracy": accuracy,
     }

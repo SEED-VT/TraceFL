@@ -17,19 +17,27 @@ from flwr.common import ndarrays_to_parameters
 
 from tracefl.client import FlowerClient, get_parameters, set_parameters
 from tracefl.dataset import get_clients_server_data, mdedical_dataset2labels, convert_client2_faulty_client
-
-
 from tracefl.models import global_model_eval, initialize_model
 from tracefl.strategy import FedAvgSave
 from tracefl.utils import set_exp_key, get_backend_config
 from tracefl.fl_provenance import given_key_provenance
-from tracefl.plotting import do_plotting, convert_cache_to_csv, plot_label_distribution, plot_tracefl_configuration_results, feddebug_comparison_table
+from tracefl.plotting import plot_label_distribution, plot_tracefl_configuration_results, feddebug_comparison_table
 
 
 class FLSimulation:
     """Main class to run the simulation."""
 
     def __init__(self, cfg, cache):
+        """
+        Initialize the FLSimulation instance.
+
+        Parameters
+        ----------
+        cfg : object
+            Configuration object containing experiment settings.
+        cache : diskcache.Index
+            Cache object for training data and results.
+        """        
         self.all_rounds_results = []
         self.cache = cache
         self.cfg = cfg
@@ -38,11 +46,25 @@ class FLSimulation:
         self.backend_config = get_backend_config(cfg)
 
     def set_server_data(self, ds):
-        """Set the server data."""
+        """
+        Set the server test dataset.
+
+        Parameters
+        ----------
+        ds : object
+            The server test dataset.
+        """
         self.server_testdata = ds
 
     def set_clients_data(self, c2d):
-        """Set the clients data."""
+        """
+        Set the client datasets.
+
+        Parameters
+        ----------
+        c2d : dict
+            Dictionary mapping client IDs to their corresponding datasets.
+        """
         self.client2data = c2d
         logging.info(f'Number of clients: {len(self.client2data)}')
 
@@ -59,6 +81,13 @@ class FLSimulation:
                 f"Reducing number of clients to: {self.cfg.data_dist.num_clients}")
 
     def set_strategy(self):
+        """
+        Set the federated learning strategy.
+
+        Returns
+        -------
+        None
+        """
         initial_net = initialize_model(
             self.cfg.model.name, self.cfg.dataset)["model"]
         if self.cfg.strategy.name in ["fedavg"]:
@@ -92,7 +121,19 @@ class FLSimulation:
                 self.strategy = strategy
 
     def _fit_metrics_aggregation_fn(self, metrics):
-        """Aggregate metrics recieved from client."""
+        """
+        Aggregate metrics received from clients.
+
+        Parameters
+        ----------
+        metrics : list
+            List of tuples containing metrics and associated client information.
+
+        Returns
+        -------
+        dict
+            Dictionary containing aggregated loss and accuracy.
+        """
         logging.info(">>   ------------------- Clients Metrics ------------- ")
         all_logs = {}
         for t in metrics:
@@ -108,6 +149,19 @@ class FLSimulation:
         return {"loss": 0.1, "accuracy": 0.2}
 
     def _get_fit_config(self, server_round: int):
+        """
+        Get the configuration for the client's local training.
+
+        Parameters
+        ----------
+        server_round : int
+            The current round number of federated learning.
+
+        Returns
+        -------
+        dict
+            Dictionary containing configuration parameters for client training.
+        """
         random.seed(server_round)
         torch.manual_seed(server_round)
         config = {
@@ -120,6 +174,26 @@ class FLSimulation:
         return config
 
     def _evaluate_global_model(self, server_round, parameters, config):
+        """
+        Evaluate the global model on the server test dataset.
+
+        Parameters
+        ----------
+        server_round : int
+            The current federated learning round.
+        parameters : list
+            Model parameters in a suitable format.
+        config : dict
+            Configuration dictionary for evaluation.
+
+        Returns
+        -------
+        tuple
+            A tuple containing:
+            - loss (float): Loss value of the global model.
+            - dict: Dictionary with keys "accuracy", "loss", and "round".
+        """        
+        
         gm_dict = initialize_model(self.cfg.model.name, self.cfg.dataset)
         set_parameters(gm_dict["model"], parameters)
         gm_dict["model"].eval()  # type: ignore
@@ -133,6 +207,19 @@ class FLSimulation:
         return loss, {"accuracy": accuracy, "loss": loss, "round": server_round}
 
     def _get_client(self, cid):
+        """
+        Get a Flower client instance for a given client ID.
+
+        Parameters
+        ----------
+        cid : any
+            Client identifier.
+
+        Returns
+        -------
+        FlowerClient
+            An instance of FlowerClient initialized with client-specific data.
+        """        
         model_dict = initialize_model(self.cfg.model.name, self.cfg.dataset)
         client = None
 
@@ -146,13 +233,19 @@ class FLSimulation:
             "mode": self.cfg.strategy.name,
             'output_dir': self.cfg.storage.dir,
         }
-        # print(f'args for client {cid}: {args}')
-
+        
         client = FlowerClient(args).to_client()
         return client
 
     def run(self):
-        """Run the simulation."""
+        """
+        Run the federated learning simulation.
+
+        Returns
+        -------
+        list
+            List of dictionaries containing global model evaluation results for each round.
+        """
         logging.info('Running the simulation')
         client_app = fl.client.ClientApp(client_fn=self._get_client)
 
@@ -171,7 +264,18 @@ class FLSimulation:
 
 
 def run_training_simulation(cfg):
-    """Run the simulation."""
+    """
+    Run the complete training simulation.
+
+    Parameters
+    ----------
+    cfg : object
+        Configuration object containing experiment settings.
+
+    Returns
+    -------
+    None
+    """
     train_cache = Index(cfg.storage.dir + cfg.storage.train_cache_name)
     if cfg.check_train_cache:
         if cfg.exp_key in train_cache:
@@ -186,20 +290,13 @@ def run_training_simulation(cfg):
         f" ***********  Starting Experiment: {cfg.exp_key} ***************")
 
     ds_dict = get_clients_server_data(cfg)
-
     train_cfg = copy.deepcopy(cfg)  # important
-
-    # ds_dict["client2class"]
-    # logging.info(f'Client to class mapping: {ds_dict["client2class"]}')
-    # plot_label_distribution(ds_dict["client2class"], mdedical_dataset2labels(cfg.dataset.name), fname_type='without_flip')
-
     logging.info(f'faulty clients: {cfg.faulty_clients_ids}')
 
     if len(cfg.faulty_clients_ids) > 0:
         cfg.faulty_clients_ids = [f"{x}" for x in cfg.faulty_clients_ids]
         logging.info(
             f'Converting clients to faulty clients: {cfg.faulty_clients_ids}')
-        # _ = input("Press Enter to continue...")
         for faulty_id in cfg.faulty_clients_ids:
             client_new_ds_dict = convert_client2_faulty_client(
                 ds_dict["client2data"][faulty_id], cfg.label2flip)
@@ -239,10 +336,19 @@ def run_training_simulation(cfg):
 
 @hydra.main(config_path="conf", config_name="base", version_base=None)
 def main(cfg) -> None:
-    """Run the baseline."""
+    """
+    Main entry point for running the baseline experiment.
 
+    Parameters
+    ----------
+    cfg : object
+        Configuration object provided by Hydra.
+
+    Returns
+    -------
+    None
+    """
     cfg.exp_key = set_exp_key(cfg)
-
     if cfg.dry_run:
         logging.info(f"DRY RUN: {cfg.exp_key}")
         return
@@ -259,12 +365,5 @@ def main(cfg) -> None:
         else:
             plot_tracefl_configuration_results(cfg)
 
-    # if cfg.convert_cache_to_csv:
-    #     prov_cache =  Index(cfg.storage.dir + cfg.storage.results_cache_name)
-    #     convert_cache_to_csv(prov_cache)
-    #     logging.info("Converted cache to csv is done")
-    # if cfg.plotting:
-    #     logging.info("Plotting results")
-    #     do_plotting()
 if __name__ == "__main__":
     main()
