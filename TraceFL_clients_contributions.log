@@ -1,31 +1,7 @@
-[INFO] -  ***********  Starting Experiment: Temp--resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients20-fedavg-(R2-clientsPerR4)-non_iid_dirichlet0.1-batch32-epochs2-lr0.001 ***************
-[INFO] - Partition helper: Keys in the dataset are: dict_keys(['image', 'label'])
-[INFO] -  Fixing partition for client 0
-[INFO] -  Fixing partition for client 1
-[INFO] -  Fixing partition for client 2
-[INFO] -  Fixing partition for client 3
-[INFO] -  Fixing partition for client 4
-[INFO] -  Fixing partition for client 5
-[INFO] -  Fixing partition for client 6
-[INFO] -  Fixing partition for client 7
-[INFO] -  Fixing partition for client 8
-[INFO] -  Fixing partition for client 9
-[INFO] -  Fixing partition for client 10
-[INFO] -  Fixing partition for client 11
-[INFO] -  Fixing partition for client 12
-[INFO] -  Fixing partition for client 13
-[INFO] -  Fixing partition for client 14
-[INFO] -  Fixing partition for client 15
-[INFO] -  Fixing partition for client 16
-[INFO] -  Fixing partition for client 17
-[INFO] -  Fixing partition for client 18
-[INFO] -  Fixing partition for client 19
-[INFO] -  -- fix partition is done --
-[INFO] - client2class: {'0': {5: 211, 8: 289, 4: 136, 7: 119, 1: 26}, '1': {8: 1417, 3: 87, 5: 174, 4: 275, 0: 89, 7: 6}, '2': {0: 1654, 3: 244, 9: 13}, '3': {9: 777, 4: 316, 5: 179}, '4': {0: 227, 7: 65, 3: 531, 2: 83}, '5': {6: 1699, 7: 335, 3: 14}, '6': {7: 1524, 0: 306, 6: 162, 2: 41, 1: 5, 5: 10}, '7': {3: 1896, 0: 139, 1: 13}, '8': {1: 2048}, '9': {9: 942, 7: 533, 1: 311, 5: 262}, '10': {5: 102, 4: 1833, 0: 113}, '11': {5: 2048}, '12': {4: 670, 0: 110, 5: 224}, '13': {9: 270, 2: 34, 0: 31, 7: 32}, '14': {9: 2040, 7: 8}, '15': {2: 1582, 1: 406, 5: 60}, '16': {2: 883, 0: 1165}, '17': {6: 2015, 3: 19, 9: 14}, '18': {8: 210, 4: 516}, '19': {9: 405, 2: 495, 6: 10, 1: 237, 0: 30}}
-[INFO] - > client2class {'0': {5: 211, 8: 289, 4: 136, 7: 119, 1: 26}, '1': {8: 1417, 3: 87, 5: 174, 4: 275, 0: 89, 7: 6}, '2': {0: 1654, 3: 244, 9: 13}, '3': {9: 777, 4: 316, 5: 179}, '4': {0: 227, 7: 65, 3: 531, 2: 83}, '5': {6: 1699, 7: 335, 3: 14}, '6': {7: 1524, 0: 306, 6: 162, 2: 41, 1: 5, 5: 10}, '7': {3: 1896, 0: 139, 1: 13}, '8': {1: 2048}, '9': {9: 942, 7: 533, 1: 311, 5: 262}, '10': {5: 102, 4: 1833, 0: 113}, '11': {5: 2048}, '12': {4: 670, 0: 110, 5: 224}, '13': {9: 270, 2: 34, 0: 31, 7: 32}, '14': {9: 2040, 7: 8}, '15': {2: 1582, 1: 406, 5: 60}, '16': {2: 883, 0: 1165}, '17': {6: 2015, 3: 19, 9: 14}, '18': {8: 210, 4: 516}, '19': {9: 405, 2: 495, 6: 10, 1: 237, 0: 30}}
-[INFO] - Data per client in experiment [781, 2048, 1911, 1272, 906, 2048, 2048, 2048, 2048, 2048, 2048, 2048, 1004, 367, 2048, 2048, 2048, 2048, 726, 1177]
-[INFO] - Min data on a client: 367
-[INFO] - Saving dataset to cache storage_of_exps/cache_of_fl_datasets: -dist_type:non_iid_dirichlet-num_clients:20-batch_size:32-dirichlet_alpha:0.1-dname:mnist-mname:resnet18-storage_dir:storage_of_exps/-max_per_client_data_size:2048-max_server_data_size:2048-architecture:cnn-
+[INFO] -  ***********  Starting Experiment: Temp--distilbert/distilbert-base-uncased-dbpedia_14-faulty_clients[[]]-noise_rateNone-TClients20-fedavg-(R2-clientsPerR4)-non_iid_dirichlet0.3-batch32-epochs2-lr0.001 ***************
+[INFO] - 
+Loading dataset from cache storage_of_exps/cache_of_fl_datasets: -dist_type:non_iid_dirichlet-num_clients:20-batch_size:32-dirichlet_alpha:0.3-dname:dbpedia_14-mname:distilbert/distilbert-base-uncased-storage_dir:storage_of_exps/-max_per_client_data_size:2048-max_server_data_size:2048-architecture:transformer-
+
 [INFO] - faulty clients: []
 [INFO] - Number of clients: 20
 [INFO] - Participating clients ids  are ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19']
@@ -37,99 +13,341 @@
 [INFO] - [INIT]
 [INFO] - Using initial global parameters provided by strategy
 [INFO] - Evaluating initial global parameters
-[INFO] - initial parameters (loss, other metrics): 0.004749297630041838, {'accuracy': 0.078125, 'loss': 0.004749297630041838, 'round': 0}
+[INFO] - initial parameters (loss, other metrics): 2.6466264724731445, {'accuracy': {'accuracy': 0.0380859375}, 'loss': 2.6466264724731445, 'round': 0}
 [INFO] - 
 [INFO] - [ROUND 1]
 [INFO] - configure_fit: strategy sampled 4 clients (out of 20)
 [INFO] - aggregate_fit: received 4 results and 0 failures
-[INFO] - participating clients: dict_keys(['19', '6', '16', '0'])
+[INFO] - participating clients: dict_keys(['16', '9', '1', '5'])
 [INFO] - >>   ------------------- Clients Metrics ------------- 
-[INFO] -  Client 0, Loss Train 0.004512601706739539, Accuracy Train 0.9590268886043534, data_points = 24
-[INFO] -  Client 6, Loss Train 0.0028641644922231535, Accuracy Train 0.9755859375, data_points = 64
-[INFO] -  Client 16, Loss Train 0.0007166553662507624, Accuracy Train 0.9931640625, data_points = 64
-[INFO] -  Client 19, Loss Train 0.0026946432847757534, Accuracy Train 0.9719626168224299, data_points = 36
-[INFO] - fit progress: (1, 0.005909215775318444, {'accuracy': 0.18994140625, 'loss': 0.005909215775318444, 'round': 1}, 42.4179287829902)
+[INFO] -  Client 1, Loss Train 0.025612812489271164, Accuracy Train 0.998046875, data_points = 64
+[INFO] -  Client 5, Loss Train 0.019773580133914948, Accuracy Train 1.0, data_points = 64
+[INFO] -  Client 9, Loss Train 0.02798374742269516, Accuracy Train 0.99609375, data_points = 64
+[INFO] -  Client 16, Loss Train 0.019032994285225868, Accuracy Train 0.9990234375, data_points = 64
+[INFO] - fit progress: (1, 0.7613114714622498, {'accuracy': {'accuracy': 0.798828125}, 'loss': 0.7613114714622498, 'round': 1}, 92.1690632449463)
 [INFO] - configure_evaluate: no clients selected, skipping evaluation
 [INFO] - 
 [INFO] - [ROUND 2]
 [INFO] - configure_fit: strategy sampled 4 clients (out of 20)
 [INFO] - aggregate_fit: received 4 results and 0 failures
-[INFO] - participating clients: dict_keys(['6', '7', '2', '16'])
+[INFO] - participating clients: dict_keys(['16', '1', '10', '17'])
 [INFO] - >>   ------------------- Clients Metrics ------------- 
-[INFO] -  Client 2, Loss Train 0.0014396042409871984, Accuracy Train 0.9869178440607012, data_points = 59
-[INFO] -  Client 6, Loss Train 0.0028011596301382724, Accuracy Train 0.97900390625, data_points = 64
-[INFO] -  Client 7, Loss Train 0.0024112585265356756, Accuracy Train 0.98486328125, data_points = 64
-[INFO] -  Client 16, Loss Train 0.000455937426087516, Accuracy Train 0.99462890625, data_points = 64
-[INFO] - fit progress: (2, 0.009951111394912004, {'accuracy': 0.087890625, 'loss': 0.009951111394912004, 'round': 2}, 86.8024839849677)
+[INFO] -  Client 1, Loss Train 0.012485849671065807, Accuracy Train 0.9970703125, data_points = 64
+[INFO] -  Client 10, Loss Train 0.006965692155063152, Accuracy Train 0.9990234375, data_points = 64
+[INFO] -  Client 16, Loss Train 0.005656378343701363, Accuracy Train 0.9990234375, data_points = 64
+[INFO] -  Client 17, Loss Train 0.0025255652144551277, Accuracy Train 1.0, data_points = 64
+[INFO] - fit progress: (2, 0.3820449113845825, {'accuracy': {'accuracy': 0.89111328125}, 'loss': 0.3820449113845825, 'round': 2}, 185.0289779419545)
 [INFO] - configure_evaluate: no clients selected, skipping evaluation
 [INFO] - 
 [INFO] - [SUMMARY]
-[INFO] - Run finished 2 round(s) in 86.80s
+[INFO] - Run finished 2 round(s) in 185.03s
 [INFO] - 	History (loss, centralized):
-[INFO] - 		round 0: 0.004749297630041838
-[INFO] - 		round 1: 0.005909215775318444
-[INFO] - 		round 2: 0.009951111394912004
+[INFO] - 		round 0: 2.6466264724731445
+[INFO] - 		round 1: 0.7613114714622498
+[INFO] - 		round 2: 0.3820449113845825
 [INFO] - 	History (metrics, distributed, fit):
 [INFO] - 	{'accuracy': [(1, 0.2), (2, 0.2)], 'loss': [(1, 0.1), (2, 0.1)]}
 [INFO] - 	History (metrics, centralized):
-[INFO] - 	{'accuracy': [(0, 0.078125), (1, 0.18994140625), (2, 0.087890625)],
-[INFO] - 	 'loss': [(0, 0.004749297630041838),
-[INFO] - 	          (1, 0.005909215775318444),
-[INFO] - 	          (2, 0.009951111394912004)],
+[INFO] - 	{'accuracy': [(0, {'accuracy': 0.0380859375}),
+[INFO] - 	              (1, {'accuracy': 0.798828125}),
+[INFO] - 	              (2, {'accuracy': 0.89111328125})],
+[INFO] - 	 'loss': [(0, 2.6466264724731445),
+[INFO] - 	          (1, 0.7613114714622498),
+[INFO] - 	          (2, 0.3820449113845825)],
 [INFO] - 	 'round': [(0, 0), (1, 1), (2, 2)]}
 [INFO] - 
-[INFO] - Results of gm evaluations each round: [{'loss': 0.004749297630041838, 'accuracy': 0.078125}, {'loss': 0.005909215775318444, 'accuracy': 0.18994140625}, {'loss': 0.009951111394912004, 'accuracy': 0.087890625}]
-[INFO] - Training Complete for: Temp--resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients20-fedavg-(R2-clientsPerR4)-non_iid_dirichlet0.1-batch32-epochs2-lr0.001 
+[INFO] - Results of gm evaluations each round: [{'loss': 2.6466264724731445, 'accuracy': {'accuracy': 0.0380859375}}, {'loss': 0.7613114714622498, 'accuracy': {'accuracy': 0.798828125}}, {'loss': 0.3820449113845825, 'accuracy': {'accuracy': 0.89111328125}}]
+[INFO] - Training Complete for: Temp--distilbert/distilbert-base-uncased-dbpedia_14-faulty_clients[[]]-noise_rateNone-TClients20-fedavg-(R2-clientsPerR4)-non_iid_dirichlet0.3-batch32-epochs2-lr0.001 
 [INFO] - Running Provenance
-[INFO] - Starting provenance analysis for Temp--resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients20-fedavg-(R2-clientsPerR4)-non_iid_dirichlet0.1-batch32-epochs2-lr0.001...
+[INFO] - Starting provenance analysis for Temp--distilbert/distilbert-base-uncased-dbpedia_14-faulty_clients[[]]-noise_rateNone-TClients20-fedavg-(R2-clientsPerR4)-non_iid_dirichlet0.3-batch32-epochs2-lr0.001...
 [INFO] - 
-Loading dataset from cache storage_of_exps/cache_of_fl_datasets: -dist_type:non_iid_dirichlet-num_clients:20-batch_size:32-dirichlet_alpha:0.1-dname:mnist-mname:resnet18-storage_dir:storage_of_exps/-max_per_client_data_size:2048-max_server_data_size:2048-architecture:cnn-
+Loading dataset from cache storage_of_exps/cache_of_fl_datasets: -dist_type:non_iid_dirichlet-num_clients:20-batch_size:32-dirichlet_alpha:0.3-dname:dbpedia_14-mname:distilbert/distilbert-base-uncased-storage_dir:storage_of_exps/-max_per_client_data_size:2048-max_server_data_size:2048-architecture:transformer-
 
 [INFO] - Total test data size: 2048
 [INFO] - 
 
-             ----------Round key  Temp--resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients20-fedavg-(R2-clientsPerR4)-non_iid_dirichlet0.1-batch32-epochs2-lr0.001-round:1 -------------- 
+             ----------Round key  Temp--distilbert/distilbert-base-uncased-dbpedia_14-faulty_clients[[]]-noise_rateNone-TClients20-fedavg-(R2-clientsPerR4)-non_iid_dirichlet0.3-batch32-epochs2-lr0.001-round:1 -------------- 
 
 [INFO] - Sanity check: 1.0
-[INFO] - client ids: ['19', '6', '16', '0']
-[INFO] -             *********** Input Label: 0, Responsible Client(s): c19,c6,c16  *************
+[INFO] - client ids: ['16', '9', '1', '5']
+[INFO] -             *********** Input Label: 0, Responsible Client(s): c16,c9,c1,c5  *************
+[INFO] -      Traced Client: c1 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.56, 'c9': 0.36, 'c16': 0.06, 'c5': 0.02}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 0, Responsible Client(s): c16,c9,c1,c5  *************
+[INFO] -      Traced Client: c1 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.59, 'c9': 0.33, 'c16': 0.05, 'c5': 0.02}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 1, Responsible Client(s): c16,c9,c1,c5  *************
+[INFO] -      Traced Client: c9 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c9': 0.37, 'c16': 0.3, 'c1': 0.21, 'c5': 0.12}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 1, Responsible Client(s): c16,c9,c1,c5  *************
+[INFO] -      Traced Client: c9 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c9': 0.38, 'c16': 0.27, 'c1': 0.21, 'c5': 0.13}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 2, Responsible Client(s): c16,c9,c1,c5  *************
+[INFO] -      Traced Client: c9 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c9': 0.73, 'c16': 0.18, 'c5': 0.08, 'c1': 0.01}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 2, Responsible Client(s): c16,c9,c1,c5  *************
+[INFO] -      Traced Client: c9 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c9': 0.7, 'c16': 0.21, 'c5': 0.09, 'c1': 0.01}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 3, Responsible Client(s): c16,c9,c5  *************
 [INFO] -      Traced Client: c16 || Tracing = Correct
-[INFO] -     TraceFL Clients Contributions Rank:     {'c16': 0.92, 'c6': 0.06, 'c19': 0.02, 'c0': 0.01}
+[INFO] -     TraceFL Clients Contributions Rank:     {'c16': 0.46, 'c5': 0.46, 'c9': 0.07, 'c1': 0.01}
 [INFO] - 
 
-[INFO] -             *********** Input Label: 0, Responsible Client(s): c19,c6,c16  *************
+[INFO] -             *********** Input Label: 3, Responsible Client(s): c16,c9,c5  *************
+[INFO] -      Traced Client: c5 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c5': 0.47, 'c16': 0.45, 'c9': 0.07, 'c1': 0.01}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 5, Responsible Client(s): c16,c9,c5  *************
+[INFO] -      Traced Client: c9 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c9': 0.82, 'c16': 0.15, 'c5': 0.03, 'c1': 0.0}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 5, Responsible Client(s): c16,c9,c5  *************
+[INFO] -      Traced Client: c9 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c9': 0.8, 'c16': 0.17, 'c5': 0.03, 'c1': 0.0}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 6, Responsible Client(s): c9,c5  *************
+[INFO] -      Traced Client: c9 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c9': 0.74, 'c5': 0.24, 'c1': 0.02, 'c16': 0.01}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 6, Responsible Client(s): c9,c5  *************
+[INFO] -      Traced Client: c9 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c9': 0.69, 'c5': 0.28, 'c1': 0.02, 'c16': 0.01}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 7, Responsible Client(s): c16,c9  *************
+[INFO] -      Traced Client: c9 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c9': 0.98, 'c16': 0.01, 'c1': 0.01, 'c5': 0.0}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 7, Responsible Client(s): c16,c9  *************
+[INFO] -      Traced Client: c9 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c9': 0.98, 'c16': 0.01, 'c1': 0.01, 'c5': 0.0}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 8, Responsible Client(s): c16,c1,c5  *************
+[INFO] -      Traced Client: c1 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.66, 'c5': 0.27, 'c16': 0.07, 'c9': 0.0}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 8, Responsible Client(s): c16,c1,c5  *************
+[INFO] -      Traced Client: c1 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.62, 'c5': 0.28, 'c16': 0.1, 'c9': 0.0}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 9, Responsible Client(s): c16,c9,c1,c5  *************
+[INFO] -      Traced Client: c1 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.63, 'c16': 0.35, 'c5': 0.02, 'c9': 0.0}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 9, Responsible Client(s): c16,c9,c1,c5  *************
+[INFO] -      Traced Client: c1 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.64, 'c16': 0.34, 'c5': 0.02, 'c9': 0.0}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 10, Responsible Client(s): c16,c9,c1,c5  *************
+[INFO] -      Traced Client: c5 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c5': 0.43, 'c1': 0.28, 'c9': 0.16, 'c16': 0.13}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 10, Responsible Client(s): c16,c9,c1,c5  *************
+[INFO] -      Traced Client: c5 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c5': 0.43, 'c1': 0.28, 'c9': 0.16, 'c16': 0.13}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 11, Responsible Client(s): c16,c1,c5  *************
+[INFO] -      Traced Client: c5 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c5': 0.6, 'c16': 0.36, 'c1': 0.04, 'c9': 0.0}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 11, Responsible Client(s): c16,c1,c5  *************
+[INFO] -      Traced Client: c5 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c5': 0.65, 'c16': 0.31, 'c1': 0.04, 'c9': 0.0}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 12, Responsible Client(s): c16,c1  *************
 [INFO] -      Traced Client: c16 || Tracing = Correct
-[INFO] -     TraceFL Clients Contributions Rank:     {'c16': 0.9, 'c6': 0.06, 'c19': 0.02, 'c0': 0.01}
+[INFO] -     TraceFL Clients Contributions Rank:     {'c16': 0.89, 'c1': 0.1, 'c9': 0.0, 'c5': 0.0}
 [INFO] - 
 
-[INFO] -             *********** Input Label: 2, Responsible Client(s): c19,c6,c16  *************
+[INFO] -             *********** Input Label: 12, Responsible Client(s): c16,c1  *************
 [INFO] -      Traced Client: c16 || Tracing = Correct
-[INFO] -     TraceFL Clients Contributions Rank:     {'c16': 0.67, 'c19': 0.27, 'c6': 0.05, 'c0': 0.01}
+[INFO] -     TraceFL Clients Contributions Rank:     {'c16': 0.9, 'c1': 0.09, 'c9': 0.0, 'c5': 0.0}
 [INFO] - 
 
-[INFO] -             *********** Input Label: 2, Responsible Client(s): c19,c6,c16  *************
+[INFO] -             *********** Input Label: 13, Responsible Client(s): c16,c1  *************
 [INFO] -      Traced Client: c16 || Tracing = Correct
-[INFO] -     TraceFL Clients Contributions Rank:     {'c16': 0.69, 'c19': 0.25, 'c6': 0.06, 'c0': 0.0}
+[INFO] -     TraceFL Clients Contributions Rank:     {'c16': 0.77, 'c1': 0.23, 'c9': 0.0, 'c5': 0.0}
 [INFO] - 
 
-[INFO] - [Round 1] TraceFL Localization Accuracy = 100.0 || Total Inputs Used In Prov: 4 || GM_(loss, acc) (3.0254883766174316,0.18994140625)
+[INFO] -             *********** Input Label: 13, Responsible Client(s): c16,c1  *************
+[INFO] -      Traced Client: c16 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c16': 0.79, 'c1': 0.21, 'c9': 0.0, 'c5': 0.0}
 [INFO] - 
 
-             ----------Round key  Temp--resnet18-mnist-faulty_clients[[]]-noise_rateNone-TClients20-fedavg-(R2-clientsPerR4)-non_iid_dirichlet0.1-batch32-epochs2-lr0.001-round:2 -------------- 
+[INFO] - [Round 1] TraceFL Localization Accuracy = 100.0 || Total Inputs Used In Prov: 26 || GM_(loss, acc) (0.7613114714622498,0.798828125)
+[INFO] - 
+
+             ----------Round key  Temp--distilbert/distilbert-base-uncased-dbpedia_14-faulty_clients[[]]-noise_rateNone-TClients20-fedavg-(R2-clientsPerR4)-non_iid_dirichlet0.3-batch32-epochs2-lr0.001-round:2 -------------- 
 
 [INFO] - Sanity check: 1.0
-[INFO] - client ids: ['6', '7', '2', '16']
-[INFO] -             *********** Input Label: 0, Responsible Client(s): c6,c7,c2,c16  *************
-[INFO] -      Traced Client: c2 || Tracing = Correct
-[INFO] -     TraceFL Clients Contributions Rank:     {'c2': 0.79, 'c16': 0.18, 'c6': 0.02, 'c7': 0.0}
+[INFO] - client ids: ['16', '1', '10', '17']
+[INFO] -             *********** Input Label: 0, Responsible Client(s): c16,c1,c10  *************
+[INFO] -      Traced Client: c1 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.58, 'c10': 0.28, 'c16': 0.12, 'c17': 0.02}
 [INFO] - 
 
-[INFO] -             *********** Input Label: 0, Responsible Client(s): c6,c7,c2,c16  *************
-[INFO] -      Traced Client: c2 || Tracing = Correct
-[INFO] -     TraceFL Clients Contributions Rank:     {'c2': 0.79, 'c16': 0.19, 'c6': 0.02, 'c7': 0.0}
+[INFO] -             *********** Input Label: 0, Responsible Client(s): c16,c1,c10  *************
+[INFO] -      Traced Client: c1 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.58, 'c10': 0.29, 'c16': 0.11, 'c17': 0.02}
 [INFO] - 
 
-[INFO] - [Round 2] TraceFL Localization Accuracy = 100.0 || Total Inputs Used In Prov: 2 || GM_(loss, acc) (5.094988822937012,0.087890625)
+[INFO] -             *********** Input Label: 1, Responsible Client(s): c16,c1,c10,c17  *************
+[INFO] -      Traced Client: c17 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c17': 0.32, 'c16': 0.31, 'c10': 0.21, 'c1': 0.17}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 1, Responsible Client(s): c16,c1,c10,c17  *************
+[INFO] -      Traced Client: c17 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c17': 0.32, 'c16': 0.3, 'c10': 0.22, 'c1': 0.16}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 2, Responsible Client(s): c16,c1,c10,c17  *************
+[INFO] -      Traced Client: c17 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c17': 0.45, 'c16': 0.29, 'c10': 0.22, 'c1': 0.04}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 2, Responsible Client(s): c16,c1,c10,c17  *************
+[INFO] -      Traced Client: c17 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c17': 0.45, 'c16': 0.3, 'c10': 0.21, 'c1': 0.05}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 3, Responsible Client(s): c16,c10,c17  *************
+[INFO] -      Traced Client: c10 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c10': 0.44, 'c17': 0.37, 'c16': 0.18, 'c1': 0.01}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 3, Responsible Client(s): c16,c10,c17  *************
+[INFO] -      Traced Client: c10 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c10': 0.44, 'c17': 0.37, 'c16': 0.18, 'c1': 0.01}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 4, Responsible Client(s): c1,c10  *************
+[INFO] -      Traced Client: c1 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.47, 'c10': 0.35, 'c16': 0.09, 'c17': 0.09}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 4, Responsible Client(s): c1,c10  *************
+[INFO] -      Traced Client: c1 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.49, 'c10': 0.35, 'c16': 0.08, 'c17': 0.08}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 5, Responsible Client(s): c16,c10,c17  *************
+[INFO] -      Traced Client: c17 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c17': 0.53, 'c16': 0.24, 'c10': 0.22, 'c1': 0.01}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 5, Responsible Client(s): c16,c10,c17  *************
+[INFO] -      Traced Client: c17 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c17': 0.52, 'c10': 0.23, 'c16': 0.23, 'c1': 0.01}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 6, Responsible Client(s): c10  *************
+[INFO] -      Traced Client: c10 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c10': 0.98, 'c16': 0.01, 'c17': 0.01, 'c1': 0.01}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 6, Responsible Client(s): c10  *************
+[INFO] -      Traced Client: c10 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c10': 0.98, 'c17': 0.01, 'c16': 0.01, 'c1': 0.01}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 7, Responsible Client(s): c16,c10,c17  *************
+[INFO] -      Traced Client: c10 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c10': 0.64, 'c17': 0.35, 'c16': 0.01, 'c1': 0.0}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 7, Responsible Client(s): c16,c10,c17  *************
+[INFO] -      Traced Client: c10 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c10': 0.65, 'c17': 0.34, 'c16': 0.01, 'c1': 0.0}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 8, Responsible Client(s): c16,c1,c17  *************
+[INFO] -      Traced Client: c1 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.69, 'c17': 0.22, 'c16': 0.08, 'c10': 0.01}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 8, Responsible Client(s): c16,c1,c17  *************
+[INFO] -      Traced Client: c1 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.71, 'c17': 0.2, 'c16': 0.09, 'c10': 0.0}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 9, Responsible Client(s): c16,c1,c10,c17  *************
+[INFO] -      Traced Client: c1 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.4, 'c16': 0.23, 'c10': 0.19, 'c17': 0.18}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 9, Responsible Client(s): c16,c1,c10,c17  *************
+[INFO] -      Traced Client: c1 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.41, 'c16': 0.23, 'c10': 0.19, 'c17': 0.18}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 10, Responsible Client(s): c16,c1,c10,c17  *************
+[INFO] -      Traced Client: c1 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.55, 'c16': 0.3, 'c17': 0.1, 'c10': 0.04}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 10, Responsible Client(s): c16,c1,c10,c17  *************
+[INFO] -      Traced Client: c1 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c1': 0.55, 'c16': 0.3, 'c17': 0.1, 'c10': 0.05}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 11, Responsible Client(s): c16,c1,c10,c17  *************
+[INFO] -      Traced Client: c10 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c10': 0.55, 'c17': 0.28, 'c16': 0.12, 'c1': 0.04}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 11, Responsible Client(s): c16,c1,c10,c17  *************
+[INFO] -      Traced Client: c10 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c10': 0.55, 'c17': 0.28, 'c16': 0.12, 'c1': 0.04}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 12, Responsible Client(s): c16,c1,c17  *************
+[INFO] -      Traced Client: c17 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c17': 0.65, 'c16': 0.3, 'c1': 0.05, 'c10': 0.0}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 12, Responsible Client(s): c16,c1,c17  *************
+[INFO] -      Traced Client: c17 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c17': 0.66, 'c16': 0.29, 'c1': 0.05, 'c10': 0.0}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 13, Responsible Client(s): c16,c1  *************
+[INFO] -      Traced Client: c16 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c16': 0.76, 'c1': 0.24, 'c10': 0.0, 'c17': 0.0}
+[INFO] - 
+
+[INFO] -             *********** Input Label: 13, Responsible Client(s): c16,c1  *************
+[INFO] -      Traced Client: c16 || Tracing = Correct
+[INFO] -     TraceFL Clients Contributions Rank:     {'c16': 0.76, 'c1': 0.23, 'c10': 0.0, 'c17': 0.0}
+[INFO] - 
+
+[INFO] - [Round 2] TraceFL Localization Accuracy = 100.0 || Total Inputs Used In Prov: 28 || GM_(loss, acc) (0.3820449113845825,0.89111328125)
 [INFO] - ----------------------------
 [INFO] - Total Rounds: 2
 [INFO] - TraceFL Average Localization Accuracy: 100.0

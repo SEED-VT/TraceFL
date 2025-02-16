@@ -237,7 +237,7 @@ This artifact is released under [![License: MIT](https://img.shields.io/badge/Li
    - Carefully organized code (modular architecture, YAML configuration).  
    - Extension for new datasets or neural architectures.  
    - A permissive, open-source license ensures freedom to reuse.  
-   -  Fully functional minimal Google Colab setup (better than docker) and fully functional local setup to can run on industrial scale HPC clusters to do real world FL simulations.   
+   - A fully functional minimal Google Colab setup (better than Docker) and a fully functional local setup capable of running on industrial-scale HPC clusters for real-world FL simulations.   
 
 ## 8. Contact and Support
 - For any installation or usage issues, please open a GitHub Issue at [TraceFL Issues](https://github.com/SEED-VT/TraceFL/issues).  
